@@ -67,7 +67,7 @@ TeamFortress2.prototype._connect = function() {
 		}
 		
 		self._send(Language.ClientHello, base_gcmessages.CMsgClientHello, {});
-	}, 1000);
+	}, 5000);
 };
 
 TeamFortress2.prototype._send = function(type, protobuf, body) {
