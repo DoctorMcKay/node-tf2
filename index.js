@@ -1,3 +1,5 @@
+var vdf = require('vdf');
+
 var protomask = 0x80000000;
 
 var Language = require(__dirname + '/language.js');
@@ -55,6 +57,14 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	
 	// TODO: Add support for non-protobuf messages
 	this._steam.toGC(440, type, protobuf.serialize(body));
+};
+
+TeamFortress2.prototype.setLang = function(langFile) {
+	var lang = vdf.parse(langFile);
+	// The vdf parser appears to add some random characters and quotes to the root 'lang' key, so we'll just use a loop to find it
+	for(var i in lang) {
+		this.lang = lang[i].Tokens;
+	}
 };
 
 TeamFortress2.prototype._handlers = {};
