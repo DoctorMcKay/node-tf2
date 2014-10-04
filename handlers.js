@@ -34,7 +34,7 @@ handlers[Language.UpdateItemSchema] = function(body) {
 			return;
 		}
 		
-		self.itemSchema = vdf.parse(body);
+		self.itemSchema = vdf.parse(body).items_game;
 		self.emit('itemSchemaLoaded');
 	});
 };
@@ -66,4 +66,24 @@ handlers[Language.ClientDisplayNotification] = function(body) {
 	}
 	
 	this.emit('displayNotification', title, body);
+};
+
+handlers[Language.TFSpecificItemBroadcast] = function(body) {
+	if(!this.lang || !this.itemSchema) {
+		// We only handle this if we have a localization file and a schema
+		return;
+	}
+	
+	var proto = tf_gcmessages.CMsgGCTFSpecificItemBroadcast.parse(body);
+	var defindex = proto.itemDefIndex;
+	var item = this.itemSchema.items[defindex] || {};
+	var itemNameKey = item.item_name || '';
+	var itemName = this.lang[itemNameKey.substring(1)];
+	
+	var localizationKey = proto.wasDestruction ? "TF_Event_Item_Deleted" : "TF_Event_Item_Created";
+	var message = this.lang[localizationKey];
+	
+	message = message.replace('%owner%', proto.userName).replace('%item_name%', itemName);
+	
+	this.emit('itemBroadcast', message, proto.userName, proto.wasDestruction, defindex);
 };
