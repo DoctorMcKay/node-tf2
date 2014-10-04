@@ -25,6 +25,18 @@ handlers[Language.ClientGoodbye] = function(body) {
 handlers[Language.UpdateItemSchema] = function(body) {
 	var proto = base_gcmessages.CMsgUpdateItemSchema.parse(body);
 	this.emit('itemSchema', proto.itemSchemaVersion.toString(16).toUpperCase(), proto.itemsGameUrl);
+	
+	var self = this;
+	request(proto.itemsGameUrl, function(err, response, body) {
+		if(err) {
+			self.emit('debug', "Unable to download items_game.txt: " + err);
+			self.emit('itemSchemaError', err);
+			return;
+		}
+		
+		self.itemSchema = vdf.parse(body);
+		self.emit('itemSchemaLoaded');
+	});
 };
 
 handlers[Language.SystemMessage] = function(body) {
