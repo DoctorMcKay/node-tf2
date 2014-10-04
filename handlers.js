@@ -1,4 +1,5 @@
 var vdf = require('vdf');
+var request = require('request');
 var fs = require('fs');
 
 var TeamFortress2 = require('./index.js');
@@ -19,7 +20,7 @@ handlers[Language.ClientWelcome] = function(body) {
 handlers[Language.ClientGoodbye] = function(body) {
 	var proto = base_gcmessages.CMsgClientGoodbye.parse(body);
 	this.emit('disconnectedFromGC', proto.reason);
-});
+};
 
 handlers[Language.UpdateItemSchema] = function(body) {
 	var proto = base_gcmessages.CMsgUpdateItemSchema.parse(body);
