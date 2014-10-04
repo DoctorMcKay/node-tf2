@@ -13,6 +13,7 @@
 		"url": "https://github.com/Doctor_McKay/node-tf2.git"
 	},
 	"dependencies": {
-		"vdf":			"0.0.x"
+		"vdf": "0.0.x",
+		"protobuf": "0.11.x"
 	}
 }
