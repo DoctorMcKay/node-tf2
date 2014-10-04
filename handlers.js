@@ -16,6 +16,11 @@ handlers[Language.ClientWelcome] = function(body) {
 	this.emit('connectedToGC', proto.version);
 };
 
+handlers[Language.ClientGoodbye] = function(body) {
+	var proto = base_gcmessages.CMsgClientGoodbye.parse(body);
+	this.emit('disconnectedFromGC', proto.reason);
+});
+
 handlers[Language.UpdateItemSchema] = function(body) {
 	var proto = base_gcmessages.CMsgUpdateItemSchema.parse(body);
 	this.emit('itemSchema', proto.itemSchemaVersion.toString(16).toUpperCase(), proto.itemsGameUrl);
