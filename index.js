@@ -24,6 +24,7 @@ function TeamFortress2(steam) {
 	
 	var self = this;
 	
+	// "extend" the default steam.gamesPlayed function so we can catch when TF2 starts up
 	var gamesPlayed = steam.gamesPlayed;
 	steam.gamesPlayed = function(appids) {
 		if(appids.indexOf(440) != -1 && !self.haveGCSession) {
