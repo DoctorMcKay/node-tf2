@@ -4,8 +4,10 @@ var fs = require('fs');
 var protomask = 0x80000000;
 
 var Language = require(__dirname + '/language.js');
-var Schema = require('protobuf').Schema;
-var base_gcmessages = new Schema(fs.readFileSync(__dirname + '/generated/base_gcmessages.desc'));
+var Protos = require(__dirname + '/protos.js');
+
+var base_gcmessages = Protos.base_gcmessages;
+var tf_gcmessages = Protos.tf_gcmessages;
 
 module.exports = TeamFortress2;
 
