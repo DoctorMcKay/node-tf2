@@ -14,11 +14,13 @@ var handlers = TeamFortress2.prototype._handlers;
 
 handlers[Language.ClientWelcome] = function(body) {
 	var proto = base_gcmessages.CMsgClientWelcome.parse(body);
+	this.haveGCSession = true;
 	this.emit('connectedToGC', proto.version);
 };
 
 handlers[Language.ClientGoodbye] = function(body) {
 	var proto = base_gcmessages.CMsgClientGoodbye.parse(body);
+	this.haveGCSession = false;
 	this.emit('disconnectedFromGC', proto.reason);
 };
 

@@ -1,8 +1,11 @@
 var vdf = require('vdf');
+var fs = require('fs');
 
 var protomask = 0x80000000;
 
 var Language = require(__dirname + '/language.js');
+var Schema = require('protobuf').Schema;
+var base_gcmessages = new Schema(fs.readFileSync(__dirname + '/generated/base_gcmessages.desc'));
 
 module.exports = TeamFortress2;
 
@@ -18,6 +21,15 @@ function TeamFortress2(steam) {
 	this.haveGCSession = false;
 	
 	var self = this;
+	
+	var gamesPlayed = steam.gamesPlayed;
+	steam.gamesPlayed = function(appids) {
+		if(appids.indexOf(440) != -1 && !self.haveGCSession) {
+			self._connect();
+		}
+		
+		gamesPlayed.call(steam, appids);
+	};
 	
 	steam.on('fromGC', function(appID, type, body) {
 		if(appID != 440) {
@@ -44,6 +56,18 @@ function TeamFortress2(steam) {
 	});
 }
 
+TeamFortress2.prototype._connect = function() {
+	var self = this;
+	var interval = setInterval(function() {
+		if(self.haveGCSession) {
+			clearInterval(interval);
+			return;
+		}
+		
+		self._send(Language.ClientHello, base_gcmessages.CMsgClientHello, {});
+	}, 1000);
+};
+
 TeamFortress2.prototype._send = function(type, protobuf, body) {
 	var msgName = type;
 	for(var i in Language) {
@@ -56,7 +80,7 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	this.emit('debug', "Sending GC message " + msgName);
 	
 	// TODO: Add support for non-protobuf messages
-	this._steam.toGC(440, type, protobuf.serialize(body));
+	this._steam.toGC(440, type | protomask, protobuf.serialize(body));
 };
 
 TeamFortress2.prototype.setLang = function(langFile) {
