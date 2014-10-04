@@ -163,6 +163,22 @@ module.exports = {
 	ClientGoodbye: 4008,
 	ServerGoodbye: 4009,
 	
+	// EGCBaseMsg
+	SystemMessage: 4001,
+	ReplicateConVars: 4002,
+	ConVarUpdated: 4003,
+	InviteToParty: 4501,
+	InvitationCreated: 4502,
+	PartyInviteResponse: 4503,
+	KickFromParty: 4504,
+	LeaveParty: 4505,
+	ServerAvailable: 4506,
+	ClientConnectToServer: 4507,
+	GameServerInfo: 4508,
+	Error: 4509,
+	Replay_UploadedToYouTube: 4510,
+	LANServerAvailable: 4511,
+	
 	// ETFGCMsg
 	ReportWarKill: 5001,
 	VoteKickBanPlayer: 5018,
