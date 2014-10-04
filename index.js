@@ -61,6 +61,7 @@ function TeamFortress2(steam) {
 TeamFortress2.prototype._connect = function() {
 	var self = this;
 	var interval = setInterval(function() {
+		// TODO: Clear interval when we shut down TF2 in case the GC connection is never established
 		if(self.haveGCSession) {
 			clearInterval(interval);
 			return;
