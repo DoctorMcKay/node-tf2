@@ -1,4 +1,5 @@
 var vdf = require('vdf');
+var fs = require('fs');
 
 // Prep protobuf stuff
 var Schema = require('protobuf').Schema;
