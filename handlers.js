@@ -43,3 +43,27 @@ handlers[Language.SystemMessage] = function(body) {
 	var proto = base_gcmessages.CMsgSystemBroadcast.parse(body);
 	this.emit('systemMessage', proto.message);
 };
+
+handlers[Language.ClientDisplayNotification] = function(body) {
+	if(!this.lang) {
+		// We only handle this if we have a localization file
+		return;
+	}
+	
+	var proto = base_gcmessages.CMsgGCClientDisplayNotification.parse(body);
+	var title = this.lang[proto.notificationTitleLocalizationKey.substring(1)];
+	var body = (this.lang[proto.notificationBodyLocalizationKey.substring(1)] || '').replace(new RegExp('[\u0001|\u0002]', 'g'), '');
+	body = body.replace(/\\"/g, '"'); // The vdf parser appears to not properly parse escaped quotes
+	
+	var replacement;
+	for(var i = 0; i < proto.bodySubstringKeys.length; i++) {
+		replacement = proto.bodySubstringValues[i];
+		if(replacement.charAt(0) == '#') {
+			replacement = this.lang[replacement.substring(1)];
+		}
+		
+		body = body.replace('%' + proto.bodySubstringKeys[i] + '%', replacement);
+	}
+	
+	this.emit('displayNotification', title, body);
+};
