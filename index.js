@@ -6,6 +6,11 @@ module.exports = TeamFortress2;
 
 require('util').inherits(TeamFortress2, require('events').EventEmitter);
 
+TeamFortress2.GCGoodbyeReason = {
+	GC_GOING_DOWN: 1,
+	NO_SESSION: 2
+};
+
 function TeamFortress2(steam) {
 	this._steam = steam;
 	this.haveGCSession = false;
