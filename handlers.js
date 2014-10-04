@@ -15,3 +15,8 @@ handlers[Language.ClientWelcome] = function(body) {
 	var proto = base_gcmessages.CMsgClientWelcome.parse(body);
 	this.emit('connectedToGC', proto.version);
 };
+
+handlers[Language.UpdateItemSchema] = function(body) {
+	var proto = base_gcmessages.CMsgUpdateItemSchema.parse(body);
+	this.emit('itemSchema', proto.itemSchemaVersion.toString(16).toUpperCase(), proto.itemsGameUrl);
+};
