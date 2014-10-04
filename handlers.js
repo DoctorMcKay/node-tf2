@@ -20,3 +20,8 @@ handlers[Language.UpdateItemSchema] = function(body) {
 	var proto = base_gcmessages.CMsgUpdateItemSchema.parse(body);
 	this.emit('itemSchema', proto.itemSchemaVersion.toString(16).toUpperCase(), proto.itemsGameUrl);
 };
+
+handlers[Language.SystemMessage] = function(body) {
+	var proto = base_gcmessages.CMsgSystemBroadcast.parse(body);
+	this.emit('systemMessage', proto.message);
+};
