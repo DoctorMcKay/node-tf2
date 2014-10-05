@@ -93,6 +93,17 @@ TeamFortress2.prototype.setLang = function(langFile) {
 	}
 };
 
+TeamFortress2.prototype.craft = function(items, recipe) {
+	var buffer = new Buffer(2 + 2 + (8 * items.length));
+	buffer.writeInt16LE(recipe || -2, 0); // -2 is wildcard
+	buffer.writeInt16LE(items.length, 2);
+	for(var i = 0; i < items.length; i++) {
+		buffer.writeUInt64LE(items[i], 4 + (i * 8));
+	}
+	
+	this._send(Language.Craft, null, buffer);
+};
+
 TeamFortress2.prototype.trade = function(steamID) {
 	var buffer = new Buffer(12);
 	buffer.writeUInt32LE(0, 0);
