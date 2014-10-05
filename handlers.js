@@ -88,3 +88,9 @@ handlers[Language.TFSpecificItemBroadcast] = function(body) {
 	
 	this.emit('itemBroadcast', message, proto.userName, proto.wasDestruction, defindex);
 };
+
+handlers[Language.Trading_InitiateTradeResponse] = function(body) {
+	var response = body.readUInt32LE(0);
+	this.emit('debug', "Got trade response " + response);
+	this.emit('tradeResponse', response);
+};
