@@ -127,6 +127,13 @@ TeamFortress2.prototype.setLang = function(langFile) {
 	}
 };
 
+TeamFortress2.prototype.trade = function(steamID) {
+	var buffer = new Buffer(12);
+	buffer.writeUInt32LE(0, 0);
+	buffer.writeUInt64LE(steamID, 4);
+	this._send(Language.Trading_InitiateTradeRequest, null, buffer);
+};
+
 TeamFortress2.prototype._handlers = {};
 
 require('./handlers.js');
