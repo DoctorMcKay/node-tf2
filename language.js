@@ -1,6 +1,17 @@
 // This file contains representations of message IDs
 
 module.exports = {
+	// ESOMsg
+	SO_Create: 21,
+	SO_Update: 22,
+	SO_Destroy: 23,
+	SO_CacheSubscribed: 24,
+	SO_CacheUnsubscribed: 25,
+	SO_UpdateMultiple: 26,
+	SO_CacheSubscriptionCheck: 27,
+	SO_CacheSubscriptionRefresh: 28,
+	SO_CacheSubscribedUpToDate: 29,
+
 	// EGCItemMsg
 	Base: 1000,
 	SetSingleItemPosition: 1001,
