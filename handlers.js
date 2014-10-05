@@ -7,10 +7,12 @@ var Language = require(__dirname + '/language.js');
 var Protos = require(__dirname + '/protos.js');
 
 var base_gcmessages = Protos.base_gcmessages;
+var gcsdk_gcmessages = Protos.gcsdk_gcmessages;
 var tf_gcmessages = Protos.tf_gcmessages;
 
 var handlers = TeamFortress2.prototype._handlers;
 
+// ClientWelcome and ClientGoodbye
 handlers[Language.ClientWelcome] = function(body) {
 	var proto = base_gcmessages.CMsgClientWelcome.parse(body);
 	this.haveGCSession = true;
@@ -23,6 +25,7 @@ handlers[Language.ClientGoodbye] = function(body) {
 	this.emit('disconnectedFromGC', proto.reason);
 };
 
+// Item schema
 handlers[Language.UpdateItemSchema] = function(body) {
 	var proto = base_gcmessages.CMsgUpdateItemSchema.parse(body);
 	this.emit('itemSchema', proto.itemSchemaVersion.toString(16).toUpperCase(), proto.itemsGameUrl);
@@ -40,6 +43,7 @@ handlers[Language.UpdateItemSchema] = function(body) {
 	});
 };
 
+// Various notifications (why do we need three distinct interfaces??)
 handlers[Language.SystemMessage] = function(body) {
 	var proto = base_gcmessages.CMsgSystemBroadcast.parse(body);
 	this.emit('systemMessage', proto.message);
@@ -93,4 +97,27 @@ handlers[Language.Trading_InitiateTradeResponse] = function(body) {
 	var response = body.readUInt32LE(0);
 	this.emit('debug', "Got trade response " + response);
 	this.emit('tradeResponse', response);
+};
+
+// SO
+handlers[Language.SO_CacheSubscriptionCheck] = function(body) {
+	this.emit('debug', "Requesting SO cache subscription refresh");
+	this._send(Language.SO_CacheSubscriptionRefresh, gcsdk_gcmessages.CMsgSOCacheSubscriptionRefresh, {"owner": this._steam.steamID});
+};
+
+handlers[Language.SO_CacheSubscribed] = function(body) {
+	var proto = gcsdk_gcmessages.CMsgSOCacheSubscribed.parse(body);
+	var items;
+	proto.objects.forEach(function(cache) {
+		if(cache.typeId != 1) {
+			return; // Not the inventory cache
+		}
+		
+		items = cache.objectData.map(function(object) {
+			return base_gcmessages.CSOEconItem.parse(object);
+		});
+	});
+	
+	this.backpack = items;
+	this.emit('backpackLoaded');
 };
