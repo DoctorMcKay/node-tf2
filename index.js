@@ -83,8 +83,11 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	
 	this.emit('debug', "Sending GC message " + msgName);
 	
-	// TODO: Add support for non-protobuf messages
-	this._steam.toGC(440, type | protomask, protobuf.serialize(body));
+	if(protobuf) {
+		this._steam.toGC(440, type | protomask, protobuf.serialize(body));
+	} else {
+		this._steam.toGC(440, type, body);
+	}
 };
 
 TeamFortress2.prototype.setLang = function(langFile) {
