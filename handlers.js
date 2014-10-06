@@ -123,25 +123,36 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 };
 
 handlers[Language.SO_Create] = function(body) {
-	var item = base_gcmessages.CSOEconItem.parse(gcsdk_gcmessages.CMsgSOSingleObject.parse(body).objectData);
+	var proto = gcsdk_gcmessages.CMsgSOSingleObject.parse(body);
+	if(proto.typeId != 1) {
+		return; // Not an item
+	}
+	
+	var item = base_gcmessages.CSOEconItem.parse(proto.objectData);
 	this.backpack.push(item);
 	this.emit('itemAcquired', item);
 };
 
 handlers[Language.SO_Update] = function(body) {
-	var item = base_gcmessages.CSOEconItem.parse(gcsdk_gcmessages.CMsgSOSingleObject.parse(body).objectData);
+	var proto = gcsdk_gcmessages.CMsgSOSingleObject.parse(body);
+	if(proto.typeId != 1) {
+		return; // Not an item
+	}
+	
+	var item = base_gcmessages.CSOEconItem.parse(proto.objectData);
 	this._handleItemUpdate(item);
 };
 
 handlers[Language.SO_UpdateMultiple] = function(body) {
 	var items = gcsdk_gcmessages.CMsgSOMultipleObjects.parse(body).objects;
-	items = items.map(function(item) {
-		return base_gcmessages.CSOEconItem.parse(item.objectData);
-	});
-	
 	var self = this;
+	
 	items.forEach(function(item) {
-		self._handleItemUpdate(item);
+		if(item.typeId != 1) {
+			return;
+		}
+		
+		self._handleItemUpdate(base_gcmessages.CSOEconItem.parse(item.objectData));
 	});
 };
 
@@ -158,7 +169,12 @@ TeamFortress2.prototype._handleItemUpdate = function(item) {
 };
 
 handlers[Language.SO_Destroy] = function(body) {
-	var item = base_gcmessages.CSOEconItem.parse(gcsdk_gcmessages.CMsgSOSingleObject.parse(body).objectData);
+	var proto = gcsdk_gcmessages.CMsgSOSingleObject.parse(body);
+	if(proto.typeId != 1) {
+		return; // Not an item
+	}
+	
+	var item = base_gcmessages.CSOEconItem.parse(proto.objectData);
 	for(var i = 0; i < this.backpack.length; i++) {
 		if(this.backpack[i].id == item.id) {
 			this.backpack.splice(i, 1);
