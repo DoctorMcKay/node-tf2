@@ -90,7 +90,7 @@ Wraps the item with ID `itemID` using the gift wrap with ID `wrapID`.
 
 ### deliverGift(gift, steamID)
 
-Sends a `gift` to a recipient with a `steamID`. I'm not sure if the recipient must be playing TF2, please inform me if you know. `gift` should be the ID of the wrapped gift item.
+Sends a `gift` to a recipient with a `steamID`. The recipient doesn't need to be playing TF2. `gift` should be the ID of the wrapped gift item.
 
 ### unwrapGift(gift)
 
