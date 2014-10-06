@@ -184,3 +184,9 @@ handlers[Language.SO_Destroy] = function(body) {
 	
 	this.emit('itemRemoved', item.id);
 };
+
+// Item manipulation
+handlers[Language.CraftResponse] = function(body) {
+	// Maybe in the future figure out what data is passed here?
+	this.emit('craftingComplete');
+};
