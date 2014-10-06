@@ -121,3 +121,21 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 	this.backpack = items;
 	this.emit('backpackLoaded');
 };
+
+handlers[Language.SO_Create] = function(body) {
+	var item = base_gcmessages.CSOEconItem.parse(gcsdk_gcmessages.CMsgSOSingleObject.parse(body).objectData);
+	this.backpack.push(item);
+	this.emit('itemAcquired', item);
+};
+
+handlers[Language.SO_Destroy] = function(body) {
+	var item = base_gcmessages.CSOEconItem.parse(gcsdk_gcmessages.CMsgSOSingleObject.parse(body).objectData);
+	for(var i = 0; i < this.backpack.length; i++) {
+		if(this.backpack[i].id == item.id) {
+			this.backpack.splice(i, 1);
+			break;
+		}
+	}
+	
+	this.emit('itemRemoved', item.id);
+};
