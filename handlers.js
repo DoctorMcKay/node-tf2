@@ -175,14 +175,16 @@ handlers[Language.SO_Destroy] = function(body) {
 	}
 	
 	var item = base_gcmessages.CSOEconItem.parse(proto.objectData);
+	var itemData = null;
 	for(var i = 0; i < this.backpack.length; i++) {
 		if(this.backpack[i].id == item.id) {
+			itemData = this.backpack[i];
 			this.backpack.splice(i, 1);
 			break;
 		}
 	}
 	
-	this.emit('itemRemoved', item.id);
+	this.emit('itemRemoved', itemData);
 };
 
 // Item manipulation
