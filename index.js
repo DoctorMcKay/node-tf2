@@ -111,6 +111,13 @@ TeamFortress2.prototype.trade = function(steamID) {
 	this._send(Language.Trading_InitiateTradeRequest, null, buffer);
 };
 
+TeamFortress2.prototype.setStyle = function(item, style) {
+	var buffer = new Buffer(12);
+	buffer.writeUInt64LE(item, 0);
+	buffer.writeUInt32LE(style, 8);
+	this._send(Language.SetItemStyle, null, buffer);
+};
+
 TeamFortress2.prototype._handlers = {};
 
 require('./enums.js');
