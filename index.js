@@ -131,6 +131,26 @@ TeamFortress2.prototype.deleteItem = function(item) {
 	this._send(Language.Delete, null, buffer);
 };
 
+TeamFortress2.prototype.wrapItem = function(wrapID, itemID) {
+	var buffer = new Buffer(16);
+	buffer.writeUInt64LE(wrapID, 0);
+	buffer.writeUInt64LE(itemID, 8);
+	this._send(Language.GiftWrapItem, null, buffer);
+};
+
+TeamFortress2.prototype.deliverGift = function(gift, steamID) {
+	var buffer = new Buffer(16);
+	buffer.writeUInt64LE(gift, 0);
+	buffer.writeUInt64LE(steamID, 8);
+	this._send(Language.DeliverGift, null, buffer);
+};
+
+TeamFortress2.prototype.unwrapGift = function(gift) {
+	var buffer = new Buffer(8);
+	buffer.writeUInt64LE(gift);
+	this._send(Language.UnwrapGiftRequest, null, buffer);
+};
+
 TeamFortress2.prototype._handlers = {};
 
 require('./enums.js');
