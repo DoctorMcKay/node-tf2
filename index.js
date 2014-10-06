@@ -118,6 +118,13 @@ TeamFortress2.prototype.setStyle = function(item, style) {
 	this._send(Language.SetItemStyle, null, buffer);
 };
 
+TeamFortress2.prototype.setPosition = function(item, position) {
+	var buffer = new Buffer(16);
+	buffer.writeUInt64LE(item, 0);
+	buffer.writeUInt64LE(position, 8);
+	this._send(Language.SetSingleItemPosition, null, buffer);
+};
+
 TeamFortress2.prototype._handlers = {};
 
 require('./enums.js');
