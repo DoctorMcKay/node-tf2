@@ -155,6 +155,10 @@ TeamFortress2.prototype.useItem = function(item) {
 	this._send(Language.UseItemRequest, base_gcmessages.CMsgUseItem, {"itemId": item});
 };
 
+TeamFortress2.prototype.sortBackpack = function(sortType) {
+	this._send(Language.SortItems, base_gcmessages.CMsgSortItems, {"sortType": sortType});
+};
+
 TeamFortress2.prototype._handlers = {};
 
 require('./enums.js');
