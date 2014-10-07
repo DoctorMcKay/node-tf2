@@ -96,6 +96,14 @@ Sends a `gift` to a recipient with a `steamID`. The recipient doesn't need to be
 
 Unwraps a `gift`. The `gift` parameter should be the ID of a received wrapped gift item.
 
+### useItem(item)
+
+Generically use an item. The `item` parameter should be an item ID.
+
+### sortBackpack(sortType)
+
+Sorts your backpack. `sortType` is the ID of the type of sort you want. I don't know which sort type is which code, so you'll have to figure that out for yourself.
+
 # Events
 
 ### connectedToGC
