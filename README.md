@@ -156,14 +156,12 @@ Notifications have a valid and non-empty `title`, but the official client doesn'
 
 ### itemBroadcast
 
-- `message` - The message text that is rendered by clients
+- `message` - The message text that is rendered by clients. This will be `null` if you haven't called `setLang` with a valid localization file or if the schema isn't loaded.
 - `username` - The name of the user that received/deleted an item
 - `wasDestruction` - `true` if the user deleted their item, `false` if they received it
 - `defindex` - The definition index of the item that was received/deleted
 
 Emitted when an item broadcast notification is sent. In the official client, the `message` is displayed as a regular pop-up notification box. Currently, this is only used for broadcasting Golden Frying Pan drops/deletions.
-
-**This won't be emitted unless you call `setLang` with a valid localization file.**
 
 ### tradeResponse
 
