@@ -151,6 +151,10 @@ TeamFortress2.prototype.unwrapGift = function(gift) {
 	this._send(Language.UnwrapGiftRequest, null, buffer);
 };
 
+TeamFortress2.prototype.useItem = function(item) {
+	this._send(Language.UseItemRequest, base_gcmessages.CMsgUseItem, {"itemId": item});
+};
+
 TeamFortress2.prototype._handlers = {};
 
 require('./enums.js');
