@@ -223,3 +223,13 @@ handlers[Language.CraftResponse] = function(body) {
 	// Maybe in the future figure out what data is passed here?
 	this.emit('craftingComplete');
 };
+
+// Professor Speks
+handlers[Language.FreeTrial_ThankedBySomeone] = function(body) {
+	var proto = tf_gcmessages.CMsgTFThankedBySomeone.parse(body);
+	this.emit('professorSpeksReceived', proto.thankerSteamId);
+};
+
+handlers[Language.FreeTrial_ThankedSomeone] = function(body) {
+	this.emit('professorSpeksSent');
+};
