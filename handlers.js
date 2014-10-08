@@ -185,13 +185,19 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 			this.canSendProfessorSpeks = data.needToChooseMostHelpfulFriend;
 			
 			var changed = {};
+			var somethingHasChanged = false;
 			for(var i in oldData) {
 				if(this[i] != oldData[i]) {
+					somethingHasChanged = true;
 					changed[i] = oldData[i];
 				}
 			}
 			
-			this.emit('accountUpdate', changed);
+			if(somethingHasChanged) {
+				// Only emit the event if a property that we're tracking changes
+				this.emit('accountUpdate', changed);
+			}
+			
 			break;
 		default:
 			this.emit('debug', "Unknown SO type " + so.typeId + " updated");
