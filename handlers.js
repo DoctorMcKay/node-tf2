@@ -174,10 +174,24 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 			break;
 		case 7:
 			var data = base_gcmessages.CSOEconGameAccountClient.parse(so.objectData);
+			var oldData = {
+				"premium": this.premium,
+				"backpackSlots": this.backpackSlots,
+				"canSendProfessorSpeks": this.canSendProfessorSpeks
+			};
+			
 			this.premium = !data.trialAccount;
 			this.backpackSlots = (data.trialAccount ? 50 : 300) + data.additionalBackpackSlots;
 			this.canSendProfessorSpeks = data.needToChooseMostHelpfulFriend;
-			this.emit('accountUpdate');
+			
+			var changed = {};
+			for(var i in oldData) {
+				if(this[i] != oldData[i]) {
+					changed[i] = oldData[i];
+				}
+			}
+			
+			this.emit('accountUpdate', changed);
 			break;
 		default:
 			this.emit('debug', "Unknown SO type " + so.typeId + " updated");
