@@ -1,6 +1,6 @@
 {
 	"name": "tf2",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Exposes a simple API for interacting with the Team Fortress 2 game coordinator",
 	"keywords": ["tf2", "team fortress", "team fortress 2", "tf"],
 	"homepage": "https://github.com/DoctorMcKay/node-tf2",
