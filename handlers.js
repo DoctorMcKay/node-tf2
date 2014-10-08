@@ -126,7 +126,7 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 				self.emit('accountLoaded');
 				break;
 			default:
-				self.emit('debug', "Unknown SO type " + cache.typeId);
+				self.emit('debug', "Unknown SO type " + cache.typeId + " with " + cache.objectData.length + " items");
 				break;
 		}
 	});
