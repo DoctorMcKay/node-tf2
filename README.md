@@ -48,6 +48,18 @@ After `itemSchema` is emitted, this is the object representation of the parsed i
 
 After `backpackLoaded` is emitted, this is an array containing the contents of our backpack. Before that point, this is undefined.
 
+### premium
+
+`true` if this account is Premium, `false` if it's F2P. This value is defined right before `accountLoaded` is emitted.
+
+### backpackSlots
+
+The maximum number of items your backpack can hold. This value is defined right before `accountLoaded` is emitted.
+
+### canSendProfessorSpeks
+
+`true` if you can call `sendProfessorSpeks` to send the [Professor Speks](http://wiki.teamfortress.com/wiki/Professor_Speks) item to another user. This value is defined right before `accountLoaded` is emitted.
+
 # Methods
 
 ### Constructor(steamClient)
@@ -103,6 +115,14 @@ Generically use an item. The `item` parameter should be an item ID.
 ### sortBackpack(sortType)
 
 Sorts your backpack. `sortType` is the ID of the type of sort you want. I don't know which sort type is which code, so you'll have to figure that out for yourself.
+
+### sendProfessorSpeks(accountID)
+
+If you're premium and you haven't sent them yet, this will thank a "helpful user" and grant them [Professor Speks](http://wiki.teamfortress.com/wiki/Professor_Speks). If they already have Speks, this will increment their "New Users Helped" counter.
+
+The `accountID` parameter should be the recipient's account ID. In the Steam3 rendered ID format [U:1:46143802], 46143802 would be the account ID. In a 64-bit Steam ID, the account ID is the lower 32 bits (or the 64-bit ID minus 76561197960265728).
+
+The recipient does not need to be on your friends list or in-game.
 
 # Events
 
@@ -173,6 +193,27 @@ Emitted when a response is received to a `trade` call.
 
 Emitted when the GC has sent us the contents of our backpack. From this point forward, backpack contents are available as a `tf2.backpack` property, which is an array of item objects. The array is in no particular order, use the `inventory` property of each item to determine its backpack slot.
 
+### accountLoaded
+
+Emitted when the GC has sent us metadata about our account. Right before this is emitted, node-tf2 will define the `premium`, `backpackSlots`, and `canSendProfessorSpeks` properties. This event indicates that those properties are now available.
+
+### accountUpdate
+
+- `oldData` - An object representing the previous value of whatever properties changed
+
+Emitted when the GC notifies us that something about our account has changed. One or more of the `premium`, `backpackSlots`, or `canSendProfessorSpeks` properties will have changed right before this event is emitted. The previous value of whatever properties changed is available via `oldData`.
+
+For example, if our account has just upgraded to premium, this would be `oldData`:
+
+```js
+{
+	"premium": false,
+	"backpackSlots": 50
+}
+```
+
+The `premium` property of node-tf2 would now be true and the `backpackSlots` property would now be 300.
+
 ### itemAcquired
 
 - `item` - The item that was acquired
@@ -195,3 +236,13 @@ Emitted when an item is removed from our backpack. The `tf2.backpack` property i
 ### craftingComplete
 
 Emitted when a craft initiated by the `craft` method finishes. Currently this event doesn't include any specific data.
+
+### professorSpeksReceived
+
+- `steamID` - The 64-bit Steam ID of the user who sent us Professor Speks
+
+Emitted when someone else thanks us and sends us Professor Speks (increments our "New Users Helped" counter if we already have them).
+
+### professorSpeksSent
+
+Emitted when we successfully send Professor Speks to someone else.
