@@ -105,19 +105,31 @@ handlers[Language.SO_CacheSubscriptionCheck] = function(body) {
 
 handlers[Language.SO_CacheSubscribed] = function(body) {
 	var proto = gcsdk_gcmessages.CMsgSOCacheSubscribed.parse(body);
-	var items;
+	var self = this;
 	proto.objects.forEach(function(cache) {
-		if(cache.typeId != 1) {
-			return; // Not the inventory cache
+		switch(cache.typeId) {
+			case 1:
+				// Backpack
+				var items = cache.objectData.map(function(object) {
+					return base_gcmessages.CSOEconItem.parse(object);
+				});
+				
+				self.backpack = items;
+				self.emit('backpackLoaded');
+				break;
+			case 7:
+				// Account metadata
+				var data = base_gcmessages.CSOEconGameAccountClient.parse(cache.objectData[0]);
+				self.premium = !data.trialAccount;
+				self.backpackSlots = (data.trialAccount ? 50 : 300) + data.additionalBackpackSlots;
+				self.canSendProfessorSpeks = data.needToChooseMostHelpfulFriend;
+				self.emit('accountLoaded');
+				break;
+			default:
+				self.emit('debug', "Unknown SO type " + cache.typeId);
+				break;
 		}
-		
-		items = cache.objectData.map(function(object) {
-			return base_gcmessages.CSOEconItem.parse(object);
-		});
 	});
-	
-	this.backpack = items;
-	this.emit('backpackLoaded');
 };
 
 handlers[Language.SO_Create] = function(body) {
@@ -133,12 +145,7 @@ handlers[Language.SO_Create] = function(body) {
 
 handlers[Language.SO_Update] = function(body) {
 	var proto = gcsdk_gcmessages.CMsgSOSingleObject.parse(body);
-	if(proto.typeId != 1) {
-		return; // Not an item
-	}
-	
-	var item = base_gcmessages.CSOEconItem.parse(proto.objectData);
-	this._handleItemUpdate(item);
+	this._handleSOUpdate(proto);
 };
 
 handlers[Language.SO_UpdateMultiple] = function(body) {
@@ -146,25 +153,37 @@ handlers[Language.SO_UpdateMultiple] = function(body) {
 	var self = this;
 	
 	items.forEach(function(item) {
-		if(item.typeId != 1) {
-			return;
-		}
-		
-		self._handleItemUpdate(base_gcmessages.CSOEconItem.parse(item.objectData));
+		self._handleSOUpdate(item);
 	});
 };
 
-TeamFortress2.prototype._handleItemUpdate = function(item) {
-	for(var i = 0; i < this.backpack.length; i++) {
-		if(this.backpack[i].id == item.id) {
-			var oldItem = this.backpack[i];
-			this.backpack[i] = item;
+TeamFortress2.prototype._handleSOUpdate = function(so) {
+	switch(so.typeId) {
+		case 1:
+			var item = base_gcmessages.CSOEconItem.parse(so.objectData);
+			for(var i = 0; i < this.backpack.length; i++) {
+				if(this.backpack[i].id == item.id) {
+					var oldItem = this.backpack[i];
+					this.backpack[i] = item;
+					
+					this.emit('itemChanged', oldItem, item);
+					break;
+				}
+			}
 			
-			this.emit('itemChanged', oldItem, item);
 			break;
-		}
+		case 7:
+			var data = base_gcmessages.CSOEconGameAccountClient.parse(so.objectData);
+			this.premium = !data.trialAccount;
+			this.backpackSlots = (data.trialAccount ? 50 : 300) + data.additionalBackpackSlots;
+			this.canSendProfessorSpeks = data.needToChooseMostHelpfulFriend;
+			this.emit('accountUpdate');
+			break;
+		default:
+			this.emit('debug', "Unknown SO type " + so.typeId + " updated");
+			break;
 	}
-};
+}
 
 handlers[Language.SO_Destroy] = function(body) {
 	var proto = gcsdk_gcmessages.CMsgSOSingleObject.parse(body);
