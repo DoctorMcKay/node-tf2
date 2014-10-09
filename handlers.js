@@ -239,3 +239,19 @@ handlers[Language.FreeTrial_ThankedBySomeone] = function(body) {
 handlers[Language.FreeTrial_ThankedSomeone] = function(body) {
 	this.emit('professorSpeksSent');
 };
+
+// Game Servers
+handlers[Language.GameServer_CreateIdentityResponse] = function(body) {
+	var proto = tf_gcmessages.CMsgGC_GameServer_CreateIdentityResponse.parse(body);
+	this.emit('createIdentity', proto.status, proto.accountCreated, proto.gameServerAccountId, proto.gameServerIdentityToken);
+};
+
+handlers[Language.GameServer_ListResponse] = function(body) {
+	var proto = tf_gcmessages.CMsgGC_GameServer_ListResponse.parse(body);
+	this.emit('registeredServers', proto.ownedGameServers || []);
+};
+
+handlers[Language.GameServer_ResetIdentityResponse] = function(body) {
+	var proto = tf_gcmessages.CMsgGC_GameServer_ResetIdentityResponse.parse(body);
+	this.emit('resetIdentity', proto.gameServerIdentityTokenReset, proto.gameServerAccountId, proto.gameServerIdentityToken);
+};

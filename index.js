@@ -1,5 +1,6 @@
 var vdf = require('vdf');
 var fs = require('fs');
+var SteamID = require('steamid');
 
 var protomask = 0x80000000;
 
@@ -161,6 +162,18 @@ TeamFortress2.prototype.sortBackpack = function(sortType) {
 
 TeamFortress2.prototype.sendProfessorSpeks = function(accountID) {
 	this._send(Language.FreeTrial_ChooseMostHelpfulFriend, tf_gcmessages.CMsgTFFreeTrialChooseMostHelpfulFriend, {"accountIdFriend": accountID});
+};
+
+TeamFortress2.prototype.createServerIdentity = function() {
+	this._send(Language.GameServer_CreateIdentity, tf_gcmessages.CMsgGC_GameServer_CreateIdentity, {"accountId": new SteamID(this._steam.steamID).accountid});
+};
+
+TeamFortress2.prototype.getRegisteredServers = function() {
+	this._send(Language.GameServer_List, tf_gcmessages.CMsgGC_GameServer_List, {"accountId": new SteamID(this._steam.steamID).accountid});
+};
+
+TeamFortress2.prototype.resetServerIdentity = function(id) {
+	this._send(Language.GameServer_ResetIdentity, tf_gcmessages.CMsgGC_GameServer_ResetIdentity, {"gameServerAccountId": id});
 };
 
 TeamFortress2.prototype._handlers = {};
