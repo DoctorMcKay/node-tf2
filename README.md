@@ -42,7 +42,7 @@ There are a few useful read-only properties available to you.
 
 ### itemSchema
 
-After `itemSchema` is emitted, this is the object representation of the parsed items_game.txt file. Before that point, this is undefined.
+After `itemSchemaLoaded` is emitted, this is the object representation of the parsed items_game.txt file. Before that point, this is undefined.
 
 ### backpack
 
