@@ -116,13 +116,23 @@ Generically use an item. The `item` parameter should be an item ID.
 
 Sorts your backpack. `sortType` is the ID of the type of sort you want. I don't know which sort type is which code, so you'll have to figure that out for yourself.
 
-### sendProfessorSpeks(accountID)
+### sendProfessorSpeks(steamID)
 
 If you're premium and you haven't sent them yet, this will thank a "helpful user" and grant them [Professor Speks](http://wiki.teamfortress.com/wiki/Professor_Speks). If they already have Speks, this will increment their "New Users Helped" counter.
 
-The `accountID` parameter should be the recipient's account ID. In the Steam3 rendered ID format [U:1:46143802], 46143802 would be the account ID. In a 64-bit Steam ID, the account ID is the lower 32 bits (or the 64-bit ID minus 76561197960265728).
+The `steamID` parameter should be the recipient's 64-bit steamID. The recipient does not need to be on your friends list or in-game.
 
-The recipient does not need to be on your friends list or in-game.
+### createServerIdentity()
+
+Creates a new GC gameserver identity account ID and token. Equivalent to running cl_gameserver_create_identity in the TF2 console. Listen for the `createIdentity` event for a response.
+
+### getRegisteredServers()
+
+Requests a list of your GC gameserver identities. Equivalent to running cl_gameserver_list in the TF2 console. Listen for the `registeredServers` event for the response.
+
+### resetServerIdentity(id)
+
+Resets the token of the server identified by a given `id`. This will make the GC generate a new token, invaliding the old one. Listen for the `resetIdentity` event for the response.
 
 # Events
 
@@ -246,3 +256,42 @@ Emitted when someone else thanks us and sends us Professor Speks (increments our
 ### professorSpeksSent
 
 Emitted when we successfully send Professor Speks to someone else.
+
+### createIdentity
+
+- `status` - The status of this request, from the values in the enum below.
+- `created` - `true` if the identity was successfully created
+- `id` - The ID of the newly-created identity
+- `token` - The authentication token of the newly-created identity
+
+Emitted when the GC sends us back the response of a `createServerIdentity()` call. The `status` value will be from the following enum:
+
+	enum EStatus {
+		kStatus_GenericFailure = 0;
+		kStatus_TooMany = -1;
+		kStatus_NoPrivs = -2;
+		kStatus_Created = 1;
+	}
+
+### registeredServers
+
+- `servers` - An array of objects representing our owned server identities
+
+Emitted when the GC sends us back the response of a `getRegisteredServers()` call. Each item in the `servers` array will be an object that looks like this:
+
+```js
+{
+	"gameServerAccountId": 291516,
+	"gameServerIdentityToken": "T0aK9zQ6W<)FTzt",
+	"gameServerStanding": 0,
+	"gameServerStandingTrend": 2
+}
+```
+
+### resetIdentity
+
+- `reset` - `true` if the token was successfully reset
+- `id` - The ID of the identity for which we reset the token
+- `token` - The new token associated with the given ID
+
+Emitted when the GC sends us back the response of a `resetServerIdentity(id)` call.
