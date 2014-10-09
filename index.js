@@ -160,8 +160,8 @@ TeamFortress2.prototype.sortBackpack = function(sortType) {
 	this._send(Language.SortItems, base_gcmessages.CMsgSortItems, {"sortType": sortType});
 };
 
-TeamFortress2.prototype.sendProfessorSpeks = function(accountID) {
-	this._send(Language.FreeTrial_ChooseMostHelpfulFriend, tf_gcmessages.CMsgTFFreeTrialChooseMostHelpfulFriend, {"accountIdFriend": accountID});
+TeamFortress2.prototype.sendProfessorSpeks = function(steamID) {
+	this._send(Language.FreeTrial_ChooseMostHelpfulFriend, tf_gcmessages.CMsgTFFreeTrialChooseMostHelpfulFriend, {"accountIdFriend": new SteamID(steamID).accountid});
 };
 
 TeamFortress2.prototype.createServerIdentity = function() {
