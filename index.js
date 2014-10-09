@@ -126,6 +126,10 @@ TeamFortress2.prototype.setPosition = function(item, position) {
 	this._send(Language.SetSingleItemPosition, null, buffer);
 };
 
+TeamFortress2.prototype.setPositions = function(items) {
+	this._send(Language.SetItemPositions, base_gcmessages.CMsgSetItemPositions, {"itemPositions": items});
+};
+
 TeamFortress2.prototype.deleteItem = function(item) {
 	var buffer = new Buffer(8);
 	buffer.writeUInt64LE(item);
