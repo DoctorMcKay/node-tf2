@@ -25,6 +25,9 @@ function TeamFortress2(steam) {
 	steam.gamesPlayed = function(appids) {
 		if(appids.indexOf(440) != -1 && !self.haveGCSession) {
 			self._connect();
+		} else if(self._helloInterval) {
+			clearInterval(self._helloInterval);
+			self._helloInterval = null;
 		}
 		
 		gamesPlayed.call(steam, appids);
@@ -57,15 +60,15 @@ function TeamFortress2(steam) {
 
 TeamFortress2.prototype._connect = function() {
 	var self = this;
-	var interval = setInterval(function() {
-		// TODO: Clear interval when we shut down TF2 in case the GC connection is never established
+	this._helloInterval = setInterval(function() {
 		if(self.haveGCSession) {
-			clearInterval(interval);
+			clearInterval(self._helloInterval);
+			self._helloInterval = null;
 			return;
 		}
 		
 		self._send(Language.ClientHello, base_gcmessages.CMsgClientHello, {});
-	}, 5000);
+	}, 2000);
 };
 
 TeamFortress2.prototype._send = function(type, protobuf, body) {
