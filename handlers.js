@@ -160,6 +160,10 @@ handlers[Language.SO_UpdateMultiple] = function(body) {
 TeamFortress2.prototype._handleSOUpdate = function(so) {
 	switch(so.typeId) {
 		case 1:
+			if(!this.backpack) {
+				return; // We don't have our backpack yet!
+			}
+			
 			var item = base_gcmessages.CSOEconItem.parse(so.objectData);
 			for(var i = 0; i < this.backpack.length; i++) {
 				if(this.backpack[i].id == item.id) {
