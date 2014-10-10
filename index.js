@@ -115,9 +115,14 @@ TeamFortress2.prototype.trade = function(steamID) {
 	this._send(Language.Trading_InitiateTradeRequest, null, buffer);
 };
 
+TeamFortress2.prototype.cancelTradeRequest = function() {
+	var buffer = new Buffer(0);
+	this._send(Language.Trading_CancelSession, null, buffer);
+};
+
 TeamFortress2.prototype.respondToTrade = function(tradeID, accept) {
 	var buffer = new Buffer(8);
-	buffer.writeUInt32LE(accept ? 0 : 1, 0);
+	buffer.writeUInt32LE(accept ? TeamFortress2.TradeResponse.Accepted : TeamFortress2.TradeResponse.Declined, 0);
 	buffer.writeUInt32LE(tradeID, 4);
 	this._send(Language.Trading_InitiateTradeResponse, null, buffer);
 };
