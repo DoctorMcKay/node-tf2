@@ -109,10 +109,12 @@ TeamFortress2.prototype.craft = function(items, recipe) {
 };
 
 TeamFortress2.prototype.trade = function(steamID) {
+	var tradeID = Math.floor(Math.random() * 100000) + 1;
 	var buffer = new Buffer(12);
-	buffer.writeUInt32LE(0, 0);
+	buffer.writeUInt32LE(tradeID, 0);
 	buffer.writeUInt64LE(steamID, 4);
 	this._send(Language.Trading_InitiateTradeRequest, null, buffer);
+	return tradeID;
 };
 
 TeamFortress2.prototype.setStyle = function(item, style) {
