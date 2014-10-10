@@ -84,6 +84,14 @@ Craft `items` together into a new item, optionally using a specific `recipe`. Th
 
 Sends an in-game trade request to `steamID`. The other player must be playing TF2 currently. Listen for the `tradeResponse` event for their response. If they accept, node-steam will emit `sessionStart` and you can start the trade with [node-steam-trade](https://github.com/seishun/node-steam-trade).
 
+### cancelTradeRequest()
+
+Cancels your current pending trade request. You can only send one trade request at a time so there is no need to pass any sort of identifier.
+
+### respondToTrade(tradeID, accept)
+
+Responds to an incoming trade request identified by `tradeID`. Pass `true` for `accept` to accept the trade request, or `false` to decline it.
+
 ### setStyle(item, style)
 
 Sets the current `style` of an `item`. The `item` parameter should be an item ID, and the `style` parameter is the index of the desired style.
@@ -193,11 +201,19 @@ Notifications have a valid and non-empty `title`, but the official client doesn'
 
 Emitted when an item broadcast notification is sent. In the official client, the `message` is displayed as a regular pop-up notification box. Currently, this is only used for broadcasting Golden Frying Pan drops/deletions.
 
+### tradeRequest
+
+- `steamID` - The 64-bit SteamID of the request's sender
+- `tradeID` - A unique numeric identifier that's used to respond to the request (via `respondToTrade`)
+
+Emitted when someone sends us a trade request. Use `respondToTrade` to accept or decline it.
+
 ### tradeResponse
 
 - `response` - The response code. This is a value in the `TradeResponse` enum.
+- `tradeID` - If `response` is `TradeResponse.Cancel`, this is the tradeID of the trade request that was canceled.
 
-Emitted when a response is received to a `trade` call.
+Emitted when a response is received to a `trade` call, or someone cancels an incoming trade request.
 
 ### backpackLoaded
 
