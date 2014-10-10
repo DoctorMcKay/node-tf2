@@ -91,10 +91,18 @@ handlers[Language.TFSpecificItemBroadcast] = function(body) {
 	this.emit('itemBroadcast', message, proto.userName, proto.wasDestruction, defindex);
 };
 
+// Trading
+handlers[Language.Trading_InitiateTradeRequest] = function(body) {
+	var tradeID = body.readUInt32LE(0);
+	var steamID = body.readUInt64LE(4);
+	this.emit('tradeRequest', steamID, tradeID);
+};
+
 handlers[Language.Trading_InitiateTradeResponse] = function(body) {
 	var response = body.readUInt32LE(0);
-	this.emit('debug', "Got trade response " + response);
-	this.emit('tradeResponse', response);
+	var tradeID = body.readUInt32LE(4);
+	this.emit('debug', "Got trade response " + response + " for " + tradeID);
+	this.emit('tradeResponse', response, tradeID);
 };
 
 // SO

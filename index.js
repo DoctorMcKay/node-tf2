@@ -115,6 +115,13 @@ TeamFortress2.prototype.trade = function(steamID) {
 	this._send(Language.Trading_InitiateTradeRequest, null, buffer);
 };
 
+TeamFortress2.prototype.respondToTrade = function(tradeID, accept) {
+	var buffer = new Buffer(8);
+	buffer.writeUInt32LE(accept ? 0 : 1, 0);
+	buffer.writeUInt32LE(tradeID, 4);
+	this._send(Language.Trading_InitiateTradeResponse, null, buffer);
+};
+
 TeamFortress2.prototype.setStyle = function(item, style) {
 	var buffer = new Buffer(12);
 	buffer.writeUInt64LE(item, 0);
