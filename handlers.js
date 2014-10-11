@@ -238,6 +238,7 @@ handlers[Language.SO_Destroy] = function(body) {
 
 // Item manipulation
 handlers[Language.CraftResponse] = function(body) {
+	var sz = body.length;
 	var blueprint = body.readUInt16LE(0);//recipe #
 	var unk = body.readUInt64LE(2);//inventory token maybe? https://wiki.teamfortress.com/wiki/WebAPI/GetPlayerItems#Inventory_token
 	//header is 8 bytes
