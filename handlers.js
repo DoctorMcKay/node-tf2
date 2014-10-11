@@ -238,8 +238,18 @@ handlers[Language.SO_Destroy] = function(body) {
 
 // Item manipulation
 handlers[Language.CraftResponse] = function(body) {
-	// Maybe in the future figure out what data is passed here?
-	this.emit('craftingComplete');
+	var blueprint = body.readUInt16LE(0);//recipe #
+	var unk = body.readUInt64LE(2);//inventory token maybe? https://wiki.teamfortress.com/wiki/WebAPI/GetPlayerItems#Inventory_token
+	//header is 8 bytes
+	var id_cnt = ((sz-8)/8);//figure out how many id's the body contains
+	var id_list = [];//lets form an array of id's
+	for(var i=0; i<id_cnt; i++)
+	{
+		var id = body.readUInt64LE(8+(i*8));//grab the next id
+		id_list.push( id );//item id
+	}
+		
+	this.emit('craftingComplete', blueprint, id_list);
 };
 
 // Professor Speks
