@@ -261,7 +261,10 @@ Emitted when an item is removed from our backpack. The `tf2.backpack` property i
 
 ### craftingComplete
 
-Emitted when a craft initiated by the `craft` method finishes. Currently this event doesn't include any specific data.
+- `recipe` - The ID of the recipe that was used to perform this craft
+- `itemsLost` - An array of IDs of items that were consumed to perform this craft
+
+Emitted when a craft initiated by the `craft` method finishes.
 
 ### professorSpeksReceived
 
