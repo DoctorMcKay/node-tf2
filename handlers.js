@@ -215,7 +215,7 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 			this.emit('debug', "Unknown SO type " + so.typeId + " updated");
 			break;
 	}
-}
+};
 
 handlers[Language.SO_Destroy] = function(body) {
 	var proto = gcsdk_gcmessages.CMsgSOSingleObject.parse(body);
