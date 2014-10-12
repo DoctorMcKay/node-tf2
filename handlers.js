@@ -166,6 +166,7 @@ handlers[Language.SO_UpdateMultiple] = function(body) {
 };
 
 TeamFortress2.prototype._handleSOUpdate = function(so) {
+	var i;
 	switch(so.typeId) {
 		case 1:
 			if(!this.backpack) {
@@ -173,7 +174,7 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 			}
 			
 			var item = base_gcmessages.CSOEconItem.parse(so.objectData);
-			for(var i = 0; i < this.backpack.length; i++) {
+			for(i = 0; i < this.backpack.length; i++) {
 				if(this.backpack[i].id == item.id) {
 					var oldItem = this.backpack[i];
 					this.backpack[i] = item;
@@ -198,7 +199,7 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 			
 			var changed = {};
 			var somethingHasChanged = false;
-			for(var i in oldData) {
+			for(i in oldData) {
 				if(this[i] != oldData[i]) {
 					somethingHasChanged = true;
 					changed[i] = oldData[i];
