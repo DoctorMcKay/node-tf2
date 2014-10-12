@@ -57,8 +57,8 @@ handlers[Language.ClientDisplayNotification] = function(body) {
 	
 	var proto = base_gcmessages.CMsgGCClientDisplayNotification.parse(body);
 	var title = this.lang[proto.notificationTitleLocalizationKey.substring(1)];
-	var body = (this.lang[proto.notificationBodyLocalizationKey.substring(1)] || '').replace(new RegExp('[\u0001|\u0002]', 'g'), '');
-	body = body.replace(/\\"/g, '"'); // The vdf parser appears to not properly parse escaped quotes
+	var text = (this.lang[proto.notificationBodyLocalizationKey.substring(1)] || '').replace(new RegExp('[\u0001|\u0002]', 'g'), '');
+	text = text.replace(/\\"/g, '"'); // The vdf parser appears to not properly parse escaped quotes
 	
 	var replacement;
 	for(var i = 0; i < proto.bodySubstringKeys.length; i++) {
@@ -67,10 +67,10 @@ handlers[Language.ClientDisplayNotification] = function(body) {
 			replacement = this.lang[replacement.substring(1)];
 		}
 		
-		body = body.replace('%' + proto.bodySubstringKeys[i] + '%', replacement);
+		text = text.replace('%' + proto.bodySubstringKeys[i] + '%', replacement);
 	}
 	
-	this.emit('displayNotification', title, body);
+	this.emit('displayNotification', title, text);
 };
 
 handlers[Language.TFSpecificItemBroadcast] = function(body) {
