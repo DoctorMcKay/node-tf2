@@ -119,7 +119,9 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 			case 1:
 				// Backpack
 				var items = cache.objectData.map(function(object) {
-					return base_gcmessages.CSOEconItem.parse(object);
+					var item = base_gcmessages.CSOEconItem.parse(object);
+					item.position = item.inventory & 0x0000FFFF;
+					return item;
 				});
 				
 				self.backpack = items;
@@ -147,6 +149,7 @@ handlers[Language.SO_Create] = function(body) {
 	}
 	
 	var item = base_gcmessages.CSOEconItem.parse(proto.objectData);
+	item.position = item.inventory & 0x0000FFFF;
 	this.backpack.push(item);
 	this.emit('itemAcquired', item);
 };
@@ -174,6 +177,7 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 			}
 			
 			var item = base_gcmessages.CSOEconItem.parse(so.objectData);
+			item.position = item.inventory & 0x0000FFFF;
 			for(i = 0; i < this.backpack.length; i++) {
 				if(this.backpack[i].id == item.id) {
 					var oldItem = this.backpack[i];
@@ -240,17 +244,16 @@ handlers[Language.SO_Destroy] = function(body) {
 // Item manipulation
 handlers[Language.CraftResponse] = function(body) {
 	var sz = body.length;
-	var blueprint = body.readUInt16LE(0);//recipe #
-	var unk = body.readUInt64LE(2);//inventory token maybe? https://wiki.teamfortress.com/wiki/WebAPI/GetPlayerItems#Inventory_token
-	//header is 8 bytes
-	var id_cnt = ((sz-8)/8);//figure out how many id's the body contains
-	var id_list = [];//lets form an array of id's
-	for(var i=0; i<id_cnt; i++)
-	{
-		var id = body.readUInt64LE(8+(i*8));//grab the next id
-		id_list.push( id );//item id
+	var blueprint = body.readUInt16LE(0); //recipe ID
+	var unk = body.readUInt64LE(2); //inventory token maybe? https://wiki.teamfortress.com/wiki/WebAPI/GetPlayerItems#Inventory_token
+	// header is 8 bytes
+	var id_cnt = ((sz - 8) / 8); //figure out how many id's the body contains
+	var id_list = []; // let's form an array of ids
+	for(var i = 0; i < id_cnt; i++) {
+		var id = body.readUInt64LE(8 + (i * 8)); //grab the next id
+		id_list.push(id); //item id
 	}
-		
+	
 	this.emit('craftingComplete', blueprint, id_list);
 };
 
