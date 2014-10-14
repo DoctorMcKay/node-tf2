@@ -217,7 +217,7 @@ Emitted when a response is received to a `trade` call, or someone cancels an inc
 
 ### backpackLoaded
 
-Emitted when the GC has sent us the contents of our backpack. From this point forward, backpack contents are available as a `tf2.backpack` property, which is an array of item objects. The array is in no particular order, use the `inventory` property of each item to determine its backpack slot.
+Emitted when the GC has sent us the contents of our backpack. From this point forward, backpack contents are available as a `tf2.backpack` property, which is an array of item objects. The array is in no particular order, use the `position` property of each item to determine its backpack slot.
 
 ### accountLoaded
 
