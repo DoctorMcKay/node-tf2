@@ -195,6 +195,13 @@ TeamFortress2.prototype.resetServerIdentity = function(id) {
 	this._send(Language.GameServer_ResetIdentity, tf_gcmessages.CMsgGC_GameServer_ResetIdentity, {"gameServerAccountId": id});
 };
 
+TeamFortress2.prototype.openCrate = function(keyID, crateID) {
+	var buffer = new Buffer(16);
+	buffer.writeUInt64LE(keyID, 0);
+	buffer.writeUInt64LE(crateID, 8);
+	this._send(Language.UnlockCrate, null, buffer);
+};
+
 TeamFortress2.prototype._handlers = {};
 
 require('./enums.js');
