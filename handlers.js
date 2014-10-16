@@ -120,7 +120,8 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 				// Backpack
 				var items = cache.objectData.map(function(object) {
 					var item = base_gcmessages.CSOEconItem.parse(object);
-					item.position = item.inventory & 0x0000FFFF;
+					var isNew = (item.inventory >>> 30) & 1;
+					item.position = (isNew ? 0 : item.inventory & 0xFFFF);
 					return item;
 				});
 				
