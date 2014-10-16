@@ -142,6 +142,10 @@ Requests a list of your GC gameserver identities. Equivalent to running cl_games
 
 Resets the token of the server identified by a given `id`. This will make the GC generate a new token, invaliding the old one. Listen for the `resetIdentity` event for the response.
 
+### openCrate(keyID, crateID)
+
+Opens a crate with `crateID` using a key with `keyID`. If successful, you'll get two `itemRemoved` events, one for the key and one for the crate, followed by an `itemAcquired` event for what you received.
+
 # Events
 
 ### connectedToGC
