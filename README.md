@@ -2,8 +2,6 @@
 
 This module provides a very flexible interface for interacting with the [Team Fortress 2](http://store.steampowered.com) Game Coordinator. It's designed to work with a [node-steam](https://github.com/seishun/node-steam) instance.
 
-**This module is still under active development. The current version is a development preview. While it's mostly stable, features may break or change at any time without notice.**
-
 # Setup
 
 First, install it from npm:
