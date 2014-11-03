@@ -202,6 +202,10 @@ TeamFortress2.prototype.openCrate = function(keyID, crateID) {
 	this._send(Language.UnlockCrate, null, buffer);
 };
 
+TeamFortress2.prototype.requestSpyVsEngiWarStats = function() {
+	this._send(Language.SpyVsEngyWar_RequestGlobalStats, tf_gcmessages.CGCMsgGC_SpyVsEngyWar_RequestGlobalStats, {});
+};
+
 TeamFortress2.prototype._handlers = {};
 
 require('./enums.js');
