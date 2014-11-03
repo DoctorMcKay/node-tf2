@@ -146,6 +146,10 @@ Resets the token of the server identified by a given `id`. This will make the GC
 
 Opens a crate with `crateID` using a key with `keyID`. If successful, you'll get two `itemRemoved` events, one for the key and one for the crate, followed by an `itemAcquired` event for what you received.
 
+### requestSpyVsEngiWarStats()
+
+Requests global stats for the Spy vs. Engi War. `spyVsEngiWarStats` will be emitted when the request is fulfilled.
+
 # Events
 
 ### connectedToGC
@@ -318,3 +322,10 @@ Emitted when the GC sends us back the response of a `getRegisteredServers()` cal
 - `token` - The new token associated with the given ID
 
 Emitted when the GC sends us back the response of a `resetServerIdentity(id)` call.
+
+### spyVsEngiWarStats
+
+- `spyScore` - The score for the Spy team
+- `engiScore` - The score for the Engineer team
+
+Emitted when the GC sends us back the response of a `reqeustSpyVsEngiWarStats()` call.
