@@ -283,3 +283,9 @@ handlers[Language.GameServer_ResetIdentityResponse] = function(body) {
 	var proto = tf_gcmessages.CMsgGC_GameServer_ResetIdentityResponse.parse(body);
 	this.emit('resetIdentity', proto.gameServerIdentityTokenReset, proto.gameServerAccountId, proto.gameServerIdentityToken);
 };
+
+// Spy vs. Engi War
+handlers[Language.SpyVsEngyWar_GlobalStatsResponse] = function(body) {
+	var proto = tf_gcmessages.CGCMsgGC_SpyVsEngyWar_GlobalStatsResponse.parse(body);
+	this.emit('spyVsEngiWarStats', proto.spyScore, proto.engyScore);
+};
