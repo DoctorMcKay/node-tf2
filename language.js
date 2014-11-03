@@ -294,5 +294,10 @@ module.exports = {
 	ClientVerificationVerboseResponse: 6502,
 	ClientSetItemSlotAttribute: 6503,
 	PlayerSkillRating_Adjustment: 6504,
+	SpyVsEngyWar_IndividualUpdate: 6505,
+	SpyVsEngyWar_JoinWar: 6506,
+	SpyVsEngyWar_RequestGlobalStats: 6507,
+	SpyVsEngyWar_GlobalStatsResponse: 6508,
+	SpyVsEngyWar_SetKillCamMessage: 6509,
 	Dev_GrantWarKill: 10001
 };
