@@ -17,17 +17,25 @@ require('util').inherits(TeamFortress2, require('events').EventEmitter);
 function TeamFortress2(steam) {
 	this._steam = steam;
 	this.haveGCSession = false;
+	this._hadGCSession = false;
 	
 	var self = this;
 	
 	// "extend" the default steam.gamesPlayed function so we can catch when TF2 starts up
 	var gamesPlayed = steam.gamesPlayed;
 	steam.gamesPlayed = function(appids) {
-		if(appids.indexOf(440) != -1 && !self.haveGCSession) {
-			self._connect();
-		} else if(self._helloInterval) {
-			clearInterval(self._helloInterval);
-			self._helloInterval = null;
+		if(appids.indexOf(440) != -1) {
+			if(!self.haveGCSession) {
+				self._connect();
+			}
+		} else {
+			if(self._helloInterval) {
+				clearInterval(self._helloInterval);
+				self._helloInterval = null;
+			}
+			
+			self.haveGCSession = false;
+			self._hadGCSession = false;
 		}
 		
 		gamesPlayed.call(steam, appids);
@@ -54,6 +62,28 @@ function TeamFortress2(steam) {
 			}
 			
 			self.emit('debug', "Got unhandled GC message " + msgName + (protobuf ? " (protobuf)" : ""));
+		}
+	});
+	
+	steam.on('loggedOff', function() {
+		self._hadGCSession = self.haveGCSession;
+		if(self.haveGCSession) {
+			self.emit('disconnectedFromGC', TeamFortress2.GCGoodbyeReason.NO_SESSION);
+			self.haveGCSession = false;
+		}
+	});
+	steam.on('error', function(e) {
+		self._hadGCSession = false;
+		if(self.haveGCSession) {
+			self.emit('disconnectedFromGC', TeamFortress2.GCGoodbyeReason.NO_SESSION);
+			self.haveGCSession = false;
+		}
+	});
+	
+	steam.on('loggedOn', function() {
+		if(self._hadGCSession) {
+			self._connect();
+			self._hadGCSession = false;
 		}
 	});
 }
