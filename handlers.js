@@ -22,7 +22,20 @@ handlers[Language.ClientWelcome] = function(body) {
 handlers[Language.ClientGoodbye] = function(body) {
 	var proto = base_gcmessages.CMsgClientGoodbye.parse(body);
 	this.haveGCSession = false;
-	this.emit('disconnectedFromGC', proto.reason);
+	
+	// For some reason the protobuf module thinks it's a good idea to return enums as strings
+	// We don't agree so we'll turn it into an enum value
+	var reason = proto.reason;
+	switch(proto.reason) {
+		case 'GCGoodbyeReason_GC_GOING_DOWN':
+			reason = TeamFortress2.GCGoodbyeReason.GC_GOING_DOWN;
+			break;
+		case 'GCGoodbyeReason_NO_SESSION':
+			reason = TeamFortress2.GCGoodbyeReason.NO_SESSION;
+			break;
+	}
+	
+	this.emit('disconnectedFromGC', reason);
 };
 
 // Item schema
