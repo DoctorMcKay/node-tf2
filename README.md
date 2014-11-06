@@ -158,7 +158,7 @@ Emitted when a GC connection is established. You shouldn't use any methods befor
 
 ### disconnectedFromGC
 
-- `reason` - The reason why we disconnected from the GC. This value is one of the values in the `GCGoodbyeReason` enum.
+- `reason` - The reason why we disconnected from the GC. This value is one of the values in the `GCGoodbyeReason` enum. If the value is unknown, you'll get a string representation instead.
 
 Emitted when we disconnect from the GC. You shouldn't use any methods until `connectedToGC` is emitted.
 
