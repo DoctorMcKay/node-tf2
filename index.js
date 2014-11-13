@@ -18,6 +18,7 @@ function TeamFortress2(steam) {
 	this._steam = steam;
 	this.haveGCSession = false;
 	this._hadGCSession = false;
+	this._isInTF2 = false;
 	
 	var self = this;
 	
@@ -25,6 +26,7 @@ function TeamFortress2(steam) {
 	var gamesPlayed = steam.gamesPlayed;
 	steam.gamesPlayed = function(appids) {
 		if(appids.indexOf(440) != -1) {
+			self._isInTF2 = true;
 			if(!self.haveGCSession) {
 				self._connect();
 			}
@@ -34,6 +36,7 @@ function TeamFortress2(steam) {
 				self._helloInterval = null;
 			}
 			
+			self._isInTF2 = false;
 			self.haveGCSession = false;
 			self._hadGCSession = false;
 		}
@@ -66,6 +69,7 @@ function TeamFortress2(steam) {
 	});
 	
 	steam.on('loggedOff', function() {
+		self._isInTF2 = false;
 		self._hadGCSession = self.haveGCSession;
 		if(self.haveGCSession) {
 			self.emit('disconnectedFromGC', TeamFortress2.GCGoodbyeReason.NO_SESSION);
@@ -74,6 +78,7 @@ function TeamFortress2(steam) {
 	});
 	
 	steam.on('error', function(e) {
+		self._isInTF2 = false;
 		self._hadGCSession = false;
 		if(self.haveGCSession) {
 			self.emit('disconnectedFromGC', TeamFortress2.GCGoodbyeReason.NO_SESSION);
@@ -90,6 +95,10 @@ function TeamFortress2(steam) {
 }
 
 TeamFortress2.prototype._connect = function() {
+	if(!this._isInTF2 || this._helloInterval) {
+		return; // We're not in TF2 or we're already trying to connect
+	}
+	
 	var self = this;
 	this._helloInterval = setInterval(function() {
 		if(self.haveGCSession) {
