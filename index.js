@@ -72,6 +72,7 @@ function TeamFortress2(steam) {
 			self.haveGCSession = false;
 		}
 	});
+	
 	steam.on('error', function(e) {
 		self._hadGCSession = false;
 		if(self.haveGCSession) {
@@ -98,7 +99,7 @@ TeamFortress2.prototype._connect = function() {
 		}
 		
 		self._send(Language.ClientHello, base_gcmessages.CMsgClientHello, {});
-	}, 2000);
+	}, 5000);
 };
 
 TeamFortress2.prototype._send = function(type, protobuf, body) {
