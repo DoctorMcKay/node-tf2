@@ -21,7 +21,11 @@ handlers[Language.ClientWelcome] = function(body) {
 
 handlers[Language.ClientGoodbye] = function(body) {
 	var proto = base_gcmessages.CMsgClientGoodbye.parse(body);
-	this.haveGCSession = false;
+	
+	if(this.haveGCSession) {
+		this._connect(); // Try to reconnect
+		this.haveGCSession = false;
+	}
 	
 	// For some reason the protobuf module thinks it's a good idea to return enums as strings
 	// We don't agree so we'll turn it into an enum value
