@@ -33,3 +33,37 @@ TeamFortress2.TradeResponse = {
 	InitiatorNewDeviceCooldown: 25,
 	OKToDeliver: 50
 };
+
+TeamFortress2.Class = {
+	Scout: 1,
+	Sniper: 2,
+	Soldier: 3,
+	Demoman: 4,
+	Medic: 5,
+	Heavy: 6,
+	Pyro: 7,
+	Spy: 8,
+	Engineer: 9
+};
+
+TeamFortress2.ItemSlot = {
+	Primary: 0,
+	Secondary: 1,
+	Melee: 2,
+	// 3 appears to be unused
+	Sapper: 4, // Sapper
+	PDA: 5,
+	PDA2: 6,
+	Cosmetic1: 7,
+	Cosmetic2: 8,
+	Action: 9,
+	Cosmetic3: 10,
+	Taunt1: 11,
+	Taunt2: 12,
+	Taunt3: 13,
+	Taunt4: 14,
+	Taunt5: 15,
+	Taunt6: 16,
+	Taunt7: 17,
+	Taunt8: 18
+};
