@@ -242,6 +242,10 @@ TeamFortress2.prototype.openCrate = function(keyID, crateID) {
 	this._send(Language.UnlockCrate, null, buffer);
 };
 
+TeamFortress2.prototype.equipItem = function(itemID, classID, slot) {
+	this._send(Language.AdjustItemEquippedState, base_gcmessages.CMsgAdjustItemEquippedState, {"itemId": itemID, "newClass": classID, "newSlot": slot});
+};
+
 TeamFortress2.prototype.requestSpyVsEngiWarStats = function() {
 	this._send(Language.SpyVsEngyWar_RequestGlobalStats, tf_gcmessages.CGCMsgGC_SpyVsEngyWar_RequestGlobalStats, {});
 };
