@@ -112,6 +112,10 @@ TeamFortress2.prototype._connect = function() {
 };
 
 TeamFortress2.prototype._send = function(type, protobuf, body) {
+	if(!this._steam.loggedOn) {
+		return false;
+	}
+	
 	var msgName = type;
 	for(var i in Language) {
 		if(Language[i] == type) {
@@ -127,6 +131,8 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	} else {
 		this._steam.toGC(440, type, body);
 	}
+	
+	return true;
 };
 
 TeamFortress2.prototype.setLang = function(langFile) {
