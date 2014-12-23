@@ -10,7 +10,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Doctor_McKay/node-tf2.git"
+		"url": "https://github.com/DoctorMcKay/node-tf2.git"
 	},
 	"dependencies": {
 		"vdf": "0.0.x",
