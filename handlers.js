@@ -166,6 +166,10 @@ handlers[Language.SO_Create] = function(body) {
 		return; // Not an item
 	}
 	
+	if(!this.backpack) {
+		return; // We don't have our backpack yet!
+	}
+	
 	var item = base_gcmessages.CSOEconItem.parse(proto.objectData);
 	item.position = item.inventory & 0x0000FFFF;
 	this.backpack.push(item);
