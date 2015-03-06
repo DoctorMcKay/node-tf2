@@ -110,14 +110,14 @@ handlers[Language.TFSpecificItemBroadcast] = function(body) {
 
 // Trading
 handlers[Language.Trading_InitiateTradeRequest] = function(body) {
-	var tradeID = body.readUInt32LE(0);
-	var steamID = body.readUInt64LE(4);
+	var tradeID = body.readUint32();
+	var steamID = body.readUint64().toString();
 	this.emit('tradeRequest', steamID, tradeID);
 };
 
 handlers[Language.Trading_InitiateTradeResponse] = function(body) {
-	var response = body.readUInt32LE(0);
-	var tradeID = body.readUInt32LE(4);
+	var response = body.readUint32();
+	var tradeID = body.readUint32();
 	this.emit('debug', "Got trade response " + response + " for " + tradeID);
 	this.emit('tradeResponse', response, tradeID);
 };
@@ -265,18 +265,18 @@ handlers[Language.SO_Destroy] = function(body) {
 
 // Item manipulation
 handlers[Language.CraftResponse] = function(body) {
-	var sz = body.length;
-	var blueprint = body.readUInt16LE(0); //recipe ID
-	var unk = body.readUInt64LE(2); //inventory token maybe? https://wiki.teamfortress.com/wiki/WebAPI/GetPlayerItems#Inventory_token
+	var blueprint = body.readUint16(); // recipe ID
+	var unknown = body.readUint64(); // inventory token maybe? https://wiki.teamfortress.com/wiki/WebAPI/GetPlayerItems#Inventory_token
 	// header is 8 bytes
-	var id_cnt = ((sz - 8) / 8); //figure out how many id's the body contains
-	var id_list = []; // let's form an array of ids
-	for(var i = 0; i < id_cnt; i++) {
-		var id = body.readUInt64LE(8 + (i * 8)); //grab the next id
-		id_list.push(id); //item id
+	var idCount = ((body.limit - 8) / 8); // figure out how many IDs the body contains
+	var idList = []; // let's form an array of IDs
+	
+	for(var i = 0; i < idCount; i++) {
+		var id = body.readUint64().toString(); // grab the next id
+		idList.push(id); // item id
 	}
 	
-	this.emit('craftingComplete', blueprint, id_list);
+	this.emit('craftingComplete', blueprint, idList);
 };
 
 // Professor Speks

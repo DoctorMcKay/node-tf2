@@ -1,6 +1,7 @@
 var vdf = require('vdf');
 var fs = require('fs');
 var SteamID = require('steamid');
+var ByteBuffer = require('bytebuffer');
 
 var protomask = 0x80000000;
 
@@ -54,7 +55,7 @@ function TeamFortress2(steam) {
 		type &= ~protomask;
 		
 		if(self._handlers[type]) {
-			self._handlers[type].call(self, body);
+			self._handlers[type].call(self, protobuf ? body : ByteBuffer.wrap(body, ByteBuffer.LITTLE_ENDIAN));
 		} else {
 			var msgName = type;
 			for(var i in Language) {
@@ -129,7 +130,8 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	if(protobuf) {
 		this._steam.toGC(440, type | protomask, protobuf.serialize(body));
 	} else {
-		this._steam.toGC(440, type, body);
+		// This is a ByteBuffer
+		this._steam.toGC(440, type, body.flip().toBuffer());
 	}
 	
 	return true;
@@ -144,46 +146,46 @@ TeamFortress2.prototype.setLang = function(langFile) {
 };
 
 TeamFortress2.prototype.craft = function(items, recipe) {
-	var buffer = new Buffer(2 + 2 + (8 * items.length));
-	buffer.writeInt16LE(recipe || -2, 0); // -2 is wildcard
-	buffer.writeInt16LE(items.length, 2);
+	var buffer = new ByteBuffer(2 + 2 + (8 * items.length), ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeInt16(recipe || -2); // -2 is wildcard
+	buffer.writeInt16(items.length);
 	for(var i = 0; i < items.length; i++) {
-		buffer.writeUInt64LE(items[i], 4 + (i * 8));
+		buffer.writeUint64(items[i]);
 	}
 	
 	this._send(Language.Craft, null, buffer);
 };
 
 TeamFortress2.prototype.trade = function(steamID) {
-	var buffer = new Buffer(12);
-	buffer.writeUInt32LE(0, 0);
-	buffer.writeUInt64LE(steamID, 4);
+	var buffer = new ByteBuffer(12, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint32(0);
+	buffer.writeUint64(steamID);
 	this._send(Language.Trading_InitiateTradeRequest, null, buffer);
 };
 
 TeamFortress2.prototype.cancelTradeRequest = function() {
-	var buffer = new Buffer(0);
+	var buffer = new ByteBuffer(0, ByteBuffer.LITTLE_ENDIAN);
 	this._send(Language.Trading_CancelSession, null, buffer);
 };
 
 TeamFortress2.prototype.respondToTrade = function(tradeID, accept) {
-	var buffer = new Buffer(8);
-	buffer.writeUInt32LE(accept ? TeamFortress2.TradeResponse.Accepted : TeamFortress2.TradeResponse.Declined, 0);
-	buffer.writeUInt32LE(tradeID, 4);
+	var buffer = new ByteBuffer(8, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint32(accept ? TeamFortress2.TradeResponse.Accepted : TeamFortress2.TradeResponse.Declined);
+	buffer.writeUint32(tradeID);
 	this._send(Language.Trading_InitiateTradeResponse, null, buffer);
 };
 
 TeamFortress2.prototype.setStyle = function(item, style) {
-	var buffer = new Buffer(12);
-	buffer.writeUInt64LE(item, 0);
-	buffer.writeUInt32LE(style, 8);
+	var buffer = new ByteBuffer(12, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(item);
+	buffer.writeUint32(style);
 	this._send(Language.SetItemStyle, null, buffer);
 };
 
 TeamFortress2.prototype.setPosition = function(item, position) {
-	var buffer = new Buffer(16);
-	buffer.writeUInt64LE(item, 0);
-	buffer.writeUInt64LE(position, 8);
+	var buffer = new ByteBuffer(16, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(item);
+	buffer.writeUint64(position);
 	this._send(Language.SetSingleItemPosition, null, buffer);
 };
 
@@ -192,28 +194,28 @@ TeamFortress2.prototype.setPositions = function(items) {
 };
 
 TeamFortress2.prototype.deleteItem = function(item) {
-	var buffer = new Buffer(8);
-	buffer.writeUInt64LE(item);
+	var buffer = new ByteBuffer(8, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(item);
 	this._send(Language.Delete, null, buffer);
 };
 
 TeamFortress2.prototype.wrapItem = function(wrapID, itemID) {
-	var buffer = new Buffer(16);
-	buffer.writeUInt64LE(wrapID, 0);
-	buffer.writeUInt64LE(itemID, 8);
+	var buffer = new ByteBuffer(16, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(wrapID);
+	buffer.writeUint64(itemID);
 	this._send(Language.GiftWrapItem, null, buffer);
 };
 
 TeamFortress2.prototype.deliverGift = function(gift, steamID) {
-	var buffer = new Buffer(16);
-	buffer.writeUInt64LE(gift, 0);
-	buffer.writeUInt64LE(steamID, 8);
+	var buffer = new ByteBuffer(16, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(gift);
+	buffer.writeUint64(steamID);
 	this._send(Language.DeliverGift, null, buffer);
 };
 
 TeamFortress2.prototype.unwrapGift = function(gift) {
-	var buffer = new Buffer(8);
-	buffer.writeUInt64LE(gift);
+	var buffer = new ByteBuffer(8, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(gift);
 	this._send(Language.UnwrapGiftRequest, null, buffer);
 };
 
@@ -242,9 +244,9 @@ TeamFortress2.prototype.resetServerIdentity = function(id) {
 };
 
 TeamFortress2.prototype.openCrate = function(keyID, crateID) {
-	var buffer = new Buffer(16);
-	buffer.writeUInt64LE(keyID, 0);
-	buffer.writeUInt64LE(crateID, 8);
+	var buffer = new ByteBuffer(16, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(keyID);
+	buffer.writeUint64(crateID);
 	this._send(Language.UnlockCrate, null, buffer);
 };
 
