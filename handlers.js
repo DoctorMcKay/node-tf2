@@ -3,24 +3,20 @@ var request = require('request');
 var fs = require('fs');
 
 var TeamFortress2 = require('./index.js');
-var Language = require(__dirname + '/language.js');
-var Protos = require(__dirname + '/protos.js');
-
-var base_gcmessages = Protos.base_gcmessages;
-var gcsdk_gcmessages = Protos.gcsdk_gcmessages;
-var tf_gcmessages = Protos.tf_gcmessages;
+var Language = require('./language.js');
+var Protos = require('./protos.js');
 
 var handlers = TeamFortress2.prototype._handlers;
 
 // ClientWelcome and ClientGoodbye
 handlers[Language.ClientWelcome] = function(body) {
-	var proto = base_gcmessages.CMsgClientWelcome.parse(body);
+	var proto = Protos.CMsgClientWelcome.decode(body);
 	this.haveGCSession = true;
 	this.emit('connectedToGC', proto.version);
 };
 
 handlers[Language.ClientGoodbye] = function(body) {
-	var proto = base_gcmessages.CMsgClientGoodbye.parse(body);
+	var proto = Protos.CMsgClientGoodbye.decode(body);
 	
 	if(this.haveGCSession) {
 		this._connect(); // Try to reconnect
@@ -44,7 +40,7 @@ handlers[Language.ClientGoodbye] = function(body) {
 
 // Item schema
 handlers[Language.UpdateItemSchema] = function(body) {
-	var proto = base_gcmessages.CMsgUpdateItemSchema.parse(body);
+	var proto = Protos.CMsgUpdateItemSchema.decode(body);
 	this.emit('itemSchema', proto.itemSchemaVersion.toString(16).toUpperCase(), proto.itemsGameUrl);
 	
 	var self = this;
@@ -62,7 +58,7 @@ handlers[Language.UpdateItemSchema] = function(body) {
 
 // Various notifications (why do we need three distinct interfaces??)
 handlers[Language.SystemMessage] = function(body) {
-	var proto = base_gcmessages.CMsgSystemBroadcast.parse(body);
+	var proto = Protos.CMsgSystemBroadcast.decode(body);
 	this.emit('systemMessage', proto.message);
 };
 
@@ -72,7 +68,7 @@ handlers[Language.ClientDisplayNotification] = function(body) {
 		return;
 	}
 	
-	var proto = base_gcmessages.CMsgGCClientDisplayNotification.parse(body);
+	var proto = Protos.CMsgGCClientDisplayNotification.decode(body);
 	var title = this.lang[proto.notificationTitleLocalizationKey.substring(1)];
 	var text = (this.lang[proto.notificationBodyLocalizationKey.substring(1)] || '').replace(new RegExp('[\u0001|\u0002]', 'g'), '');
 	text = text.replace(/\\"/g, '"'); // The vdf parser appears to not properly parse escaped quotes
@@ -91,7 +87,7 @@ handlers[Language.ClientDisplayNotification] = function(body) {
 };
 
 handlers[Language.TFSpecificItemBroadcast] = function(body) {
-	var proto = tf_gcmessages.CMsgGCTFSpecificItemBroadcast.parse(body);
+	var proto = Protos.CMsgGCTFSpecificItemBroadcast.decode(body);
 	var defindex = proto.itemDefIndex;
 	
 	var message = null;
@@ -125,18 +121,18 @@ handlers[Language.Trading_InitiateTradeResponse] = function(body) {
 // SO
 handlers[Language.SO_CacheSubscriptionCheck] = function(body) {
 	this.emit('debug', "Requesting SO cache subscription refresh");
-	this._send(Language.SO_CacheSubscriptionRefresh, gcsdk_gcmessages.CMsgSOCacheSubscriptionRefresh, {"owner": this._steam.steamID});
+	this._send(Language.SO_CacheSubscriptionRefresh, Protos.CMsgSOCacheSubscriptionRefresh, {"owner": this._steam.steamID});
 };
 
 handlers[Language.SO_CacheSubscribed] = function(body) {
-	var proto = gcsdk_gcmessages.CMsgSOCacheSubscribed.parse(body);
+	var proto = Protos.CMsgSOCacheSubscribed.decode(body);
 	var self = this;
 	proto.objects.forEach(function(cache) {
 		switch(cache.typeId) {
 			case 1:
 				// Backpack
 				var items = cache.objectData.map(function(object) {
-					var item = base_gcmessages.CSOEconItem.parse(object);
+					var item = Protos.CSOEconItem.decode(object);
 					var isNew = (item.inventory >>> 30) & 1;
 					item.position = (isNew ? 0 : item.inventory & 0xFFFF);
 					return item;
@@ -147,7 +143,7 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 				break;
 			case 7:
 				// Account metadata
-				var data = base_gcmessages.CSOEconGameAccountClient.parse(cache.objectData[0]);
+				var data = Protos.CSOEconGameAccountClient.decode(cache.objectData[0]);
 				self.premium = !data.trialAccount;
 				self.backpackSlots = (data.trialAccount ? 50 : 300) + data.additionalBackpackSlots;
 				self.canSendProfessorSpeks = data.needToChooseMostHelpfulFriend;
@@ -161,7 +157,7 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 };
 
 handlers[Language.SO_Create] = function(body) {
-	var proto = gcsdk_gcmessages.CMsgSOSingleObject.parse(body);
+	var proto = Protos.CMsgSOSingleObject.decode(body);
 	if(proto.typeId != 1) {
 		return; // Not an item
 	}
@@ -170,19 +166,19 @@ handlers[Language.SO_Create] = function(body) {
 		return; // We don't have our backpack yet!
 	}
 	
-	var item = base_gcmessages.CSOEconItem.parse(proto.objectData);
+	var item = Protos.CSOEconItem.decode(proto.objectData);
 	item.position = item.inventory & 0x0000FFFF;
 	this.backpack.push(item);
 	this.emit('itemAcquired', item);
 };
 
 handlers[Language.SO_Update] = function(body) {
-	var proto = gcsdk_gcmessages.CMsgSOSingleObject.parse(body);
+	var proto = Protos.CMsgSOSingleObject.decode(body);
 	this._handleSOUpdate(proto);
 };
 
 handlers[Language.SO_UpdateMultiple] = function(body) {
-	var items = gcsdk_gcmessages.CMsgSOMultipleObjects.parse(body).objects;
+	var items = Protos.CMsgSOMultipleObjects.decode(body).objects;
 	var self = this;
 	
 	items.forEach(function(item) {
@@ -198,7 +194,7 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 				return; // We don't have our backpack yet!
 			}
 			
-			var item = base_gcmessages.CSOEconItem.parse(so.objectData);
+			var item = Protos.CSOEconItem.decode(so.objectData);
 			item.position = item.inventory & 0x0000FFFF;
 			for(i = 0; i < this.backpack.length; i++) {
 				if(this.backpack[i].id == item.id) {
@@ -212,7 +208,7 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 			
 			break;
 		case 7:
-			var data = base_gcmessages.CSOEconGameAccountClient.parse(so.objectData);
+			var data = Protos.CSOEconGameAccountClient.decode(so.objectData);
 			var oldData = {
 				"premium": this.premium,
 				"backpackSlots": this.backpackSlots,
@@ -245,12 +241,12 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 };
 
 handlers[Language.SO_Destroy] = function(body) {
-	var proto = gcsdk_gcmessages.CMsgSOSingleObject.parse(body);
+	var proto = Protos.CMsgSOSingleObject.decode(body);
 	if(proto.typeId != 1) {
 		return; // Not an item
 	}
 	
-	var item = base_gcmessages.CSOEconItem.parse(proto.objectData);
+	var item = Protos.CSOEconItem.decode(proto.objectData);
 	var itemData = null;
 	for(var i = 0; i < this.backpack.length; i++) {
 		if(this.backpack[i].id == item.id) {
@@ -281,7 +277,7 @@ handlers[Language.CraftResponse] = function(body) {
 
 // Professor Speks
 handlers[Language.FreeTrial_ThankedBySomeone] = function(body) {
-	var proto = tf_gcmessages.CMsgTFThankedBySomeone.parse(body);
+	var proto = Protos.CMsgTFThankedBySomeone.decode(body);
 	this.emit('professorSpeksReceived', proto.thankerSteamId);
 };
 
@@ -291,22 +287,22 @@ handlers[Language.FreeTrial_ThankedSomeone] = function(body) {
 
 // Game Servers
 handlers[Language.GameServer_CreateIdentityResponse] = function(body) {
-	var proto = tf_gcmessages.CMsgGC_GameServer_CreateIdentityResponse.parse(body);
+	var proto = Protos.CMsgGC_GameServer_CreateIdentityResponse.decode(body);
 	this.emit('createIdentity', proto.status, proto.accountCreated, proto.gameServerAccountId, proto.gameServerIdentityToken);
 };
 
 handlers[Language.GameServer_ListResponse] = function(body) {
-	var proto = tf_gcmessages.CMsgGC_GameServer_ListResponse.parse(body);
+	var proto = Protos.CMsgGC_GameServer_ListResponse.decode(body);
 	this.emit('registeredServers', proto.ownedGameServers || []);
 };
 
 handlers[Language.GameServer_ResetIdentityResponse] = function(body) {
-	var proto = tf_gcmessages.CMsgGC_GameServer_ResetIdentityResponse.parse(body);
+	var proto = Protos.CMsgGC_GameServer_ResetIdentityResponse.decode(body);
 	this.emit('resetIdentity', proto.gameServerIdentityTokenReset, proto.gameServerAccountId, proto.gameServerIdentityToken);
 };
 
 // Spy vs. Engi War
 handlers[Language.SpyVsEngyWar_GlobalStatsResponse] = function(body) {
-	var proto = tf_gcmessages.CGCMsgGC_SpyVsEngyWar_GlobalStatsResponse.parse(body);
+	var proto = Protos.CGCMsgGC_SpyVsEngyWar_GlobalStatsResponse.decode(body);
 	this.emit('spyVsEngiWarStats', proto.spyScore, proto.engyScore);
 };

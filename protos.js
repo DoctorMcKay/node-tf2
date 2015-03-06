@@ -1,8 +1,11 @@
 var fs = require('fs');
-var Schema = require('protobuf').Schema;
+var Protobuf = require('protobufjs');
 
-module.exports = {
-	"base_gcmessages": new Schema(fs.readFileSync(__dirname + '/generated/base_gcmessages.desc')),
-	"gcsdk_gcmessages": new Schema(fs.readFileSync(__dirname + '/generated/gcsdk_gcmessages.desc')),
-	"tf_gcmessages": new Schema(fs.readFileSync(__dirname + '/generated/tf_gcmessages.desc'))
-};
+Protobuf.convertFieldsToCamelCase = true;
+
+var builder = Protobuf.newBuilder();
+Protobuf.loadProtoFile(__dirname + '/protos/base_gcmessages.proto', builder);
+Protobuf.loadProtoFile(__dirname + '/protos/gcsdk_gcmessages.proto', builder);
+Protobuf.loadProtoFile(__dirname + '/protos/tf_gcmessages.proto', builder);
+
+module.exports = builder.build();

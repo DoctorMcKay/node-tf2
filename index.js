@@ -5,11 +5,8 @@ var ByteBuffer = require('bytebuffer');
 
 var protomask = 0x80000000;
 
-var Language = require(__dirname + '/language.js');
-var Protos = require(__dirname + '/protos.js');
-
-var base_gcmessages = Protos.base_gcmessages;
-var tf_gcmessages = Protos.tf_gcmessages;
+var Language = require('./language.js');
+var Protos = require('./protos.js');
 
 module.exports = TeamFortress2;
 
@@ -108,7 +105,7 @@ TeamFortress2.prototype._connect = function() {
 			return;
 		}
 		
-		self._send(Language.ClientHello, base_gcmessages.CMsgClientHello, {});
+		self._send(Language.ClientHello, Protos.CMsgClientHello, {});
 	}, 5000);
 };
 
@@ -128,7 +125,7 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	this.emit('debug', "Sending GC message " + msgName);
 	
 	if(protobuf) {
-		this._steam.toGC(440, type | protomask, protobuf.serialize(body));
+		this._steam.toGC(440, type | protomask, (new protobuf(body)).toBuffer());
 	} else {
 		// This is a ByteBuffer
 		this._steam.toGC(440, type, body.flip().toBuffer());
@@ -190,7 +187,7 @@ TeamFortress2.prototype.setPosition = function(item, position) {
 };
 
 TeamFortress2.prototype.setPositions = function(items) {
-	this._send(Language.SetItemPositions, base_gcmessages.CMsgSetItemPositions, {"itemPositions": items});
+	this._send(Language.SetItemPositions, Protos.CMsgSetItemPositions, {"itemPositions": items});
 };
 
 TeamFortress2.prototype.deleteItem = function(item) {
@@ -220,27 +217,27 @@ TeamFortress2.prototype.unwrapGift = function(gift) {
 };
 
 TeamFortress2.prototype.useItem = function(item) {
-	this._send(Language.UseItemRequest, base_gcmessages.CMsgUseItem, {"itemId": item});
+	this._send(Language.UseItemRequest, Protos.CMsgUseItem, {"itemId": item});
 };
 
 TeamFortress2.prototype.sortBackpack = function(sortType) {
-	this._send(Language.SortItems, base_gcmessages.CMsgSortItems, {"sortType": sortType});
+	this._send(Language.SortItems, Protos.CMsgSortItems, {"sortType": sortType});
 };
 
 TeamFortress2.prototype.sendProfessorSpeks = function(steamID) {
-	this._send(Language.FreeTrial_ChooseMostHelpfulFriend, tf_gcmessages.CMsgTFFreeTrialChooseMostHelpfulFriend, {"accountIdFriend": new SteamID(steamID).accountid});
+	this._send(Language.FreeTrial_ChooseMostHelpfulFriend, Protos.CMsgTFFreeTrialChooseMostHelpfulFriend, {"accountIdFriend": new SteamID(steamID).accountid});
 };
 
 TeamFortress2.prototype.createServerIdentity = function() {
-	this._send(Language.GameServer_CreateIdentity, tf_gcmessages.CMsgGC_GameServer_CreateIdentity, {"accountId": new SteamID(this._steam.steamID).accountid});
+	this._send(Language.GameServer_CreateIdentity, Protos.CMsgGC_GameServer_CreateIdentity, {"accountId": new SteamID(this._steam.steamID).accountid});
 };
 
 TeamFortress2.prototype.getRegisteredServers = function() {
-	this._send(Language.GameServer_List, tf_gcmessages.CMsgGC_GameServer_List, {"accountId": new SteamID(this._steam.steamID).accountid});
+	this._send(Language.GameServer_List, Protos.CMsgGC_GameServer_List, {"accountId": new SteamID(this._steam.steamID).accountid});
 };
 
 TeamFortress2.prototype.resetServerIdentity = function(id) {
-	this._send(Language.GameServer_ResetIdentity, tf_gcmessages.CMsgGC_GameServer_ResetIdentity, {"gameServerAccountId": id});
+	this._send(Language.GameServer_ResetIdentity, Protos.CMsgGC_GameServer_ResetIdentity, {"gameServerAccountId": id});
 };
 
 TeamFortress2.prototype.openCrate = function(keyID, crateID) {
@@ -251,11 +248,11 @@ TeamFortress2.prototype.openCrate = function(keyID, crateID) {
 };
 
 TeamFortress2.prototype.equipItem = function(itemID, classID, slot) {
-	this._send(Language.AdjustItemEquippedState, base_gcmessages.CMsgAdjustItemEquippedState, {"itemId": itemID, "newClass": classID, "newSlot": slot});
+	this._send(Language.AdjustItemEquippedState, Protos.CMsgAdjustItemEquippedState, {"itemId": itemID, "newClass": classID, "newSlot": slot});
 };
 
 TeamFortress2.prototype.requestSpyVsEngiWarStats = function() {
-	this._send(Language.SpyVsEngyWar_RequestGlobalStats, tf_gcmessages.CGCMsgGC_SpyVsEngyWar_RequestGlobalStats, {});
+	this._send(Language.SpyVsEngyWar_RequestGlobalStats, Protos.CGCMsgGC_SpyVsEngyWar_RequestGlobalStats, {});
 };
 
 TeamFortress2.prototype._handlers = {};
