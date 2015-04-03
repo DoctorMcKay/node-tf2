@@ -258,7 +258,7 @@ TeamFortress2.prototype.requestSpyVsEngiWarStats = function() {
 TeamFortress2.prototype._handlers = {};
 
 function coerceToLong(num, signed) {
-	return typeof num === 'string' ? new ByteBuffer.Long(num, !signed, 10) : num;
+	return typeof num === 'string' ? new ByteBuffer.Long.fromString(num, !signed, 10) : num;
 }
 
 require('./enums.js');
