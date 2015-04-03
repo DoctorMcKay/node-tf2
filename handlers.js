@@ -122,6 +122,8 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 				var items = cache.objectData.map(function(object) {
 					var item = Protos.CSOEconItem.decode(object);
 					var isNew = (item.inventory >>> 30) & 1;
+					item.id = item.id.toString();
+					item.originalId = item.originalId.toString();
 					item.position = (isNew ? 0 : item.inventory & 0xFFFF);
 					return item;
 				});
@@ -155,6 +157,8 @@ handlers[Language.SO_Create] = function(body) {
 	}
 	
 	var item = Protos.CSOEconItem.decode(proto.objectData);
+	item.id = item.id.toString();
+	item.originalId = item.originalId.toString();
 	item.position = item.inventory & 0x0000FFFF;
 	this.backpack.push(item);
 	this.emit('itemAcquired', item);
@@ -183,6 +187,8 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 			}
 			
 			var item = Protos.CSOEconItem.decode(so.objectData);
+			item.id = item.id.toString();
+			item.originalId = item.originalId.toString();
 			item.position = item.inventory & 0x0000FFFF;
 			for(i = 0; i < this.backpack.length; i++) {
 				if(this.backpack[i].id == item.id) {
@@ -235,6 +241,7 @@ handlers[Language.SO_Destroy] = function(body) {
 	}
 	
 	var item = Protos.CSOEconItem.decode(proto.objectData);
+	item.id = item.id.toString();
 	var itemData = null;
 	for(var i = 0; i < this.backpack.length; i++) {
 		if(this.backpack[i].id == item.id) {
@@ -266,7 +273,7 @@ handlers[Language.CraftResponse] = function(body) {
 // Professor Speks
 handlers[Language.FreeTrial_ThankedBySomeone] = function(body) {
 	var proto = Protos.CMsgTFThankedBySomeone.decode(body);
-	this.emit('professorSpeksReceived', proto.thankerSteamId);
+	this.emit('professorSpeksReceived', proto.thankerSteamId.toString());
 };
 
 handlers[Language.FreeTrial_ThankedSomeone] = function(body) {
