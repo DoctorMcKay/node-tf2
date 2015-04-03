@@ -250,9 +250,9 @@ handlers[Language.SO_Destroy] = function(body) {
 // Item manipulation
 handlers[Language.CraftResponse] = function(body) {
 	var blueprint = body.readUint16(); // recipe ID
-	var unknown = body.readUint64(); // inventory token maybe? https://wiki.teamfortress.com/wiki/WebAPI/GetPlayerItems#Inventory_token
-	// header is 8 bytes
-	var idCount = ((body.limit - 8) / 8); // figure out how many IDs the body contains
+	var unknown = body.readUint32(); // always 0 in my experience
+	
+	var idCount = body.readUint16();
 	var idList = []; // let's form an array of IDs
 	
 	for(var i = 0; i < idCount; i++) {
