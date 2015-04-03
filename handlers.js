@@ -256,7 +256,7 @@ handlers[Language.SO_Destroy] = function(body) {
 
 // Item manipulation
 handlers[Language.CraftResponse] = function(body) {
-	var blueprint = body.readUint16(); // recipe ID
+	var blueprint = body.readInt16(); // recipe ID
 	var unknown = body.readUint32(); // always 0 in my experience
 	
 	var idCount = body.readUint16();
