@@ -326,4 +326,4 @@ Emitted when the GC sends us back the response of a `resetServerIdentity(id)` ca
 - `spyScore` - The score for the Spy team
 - `engiScore` - The score for the Engineer team
 
-Emitted when the GC sends us back the response of a `reqeustSpyVsEngiWarStats()` call.
+Emitted when the GC sends us back the response of a `requestSpyVsEngiWarStats()` call.
