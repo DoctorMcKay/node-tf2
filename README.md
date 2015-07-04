@@ -148,6 +148,10 @@ Opens a crate with `crateID` using a key with `keyID`. If successful, you'll get
 
 Requests global stats for the Spy vs. Engi War. `spyVsEngiWarStats` will be emitted when the request is fulfilled.
 
+### fulfillDynamicRecipe(components, recipe)
+
+Given a `recipe` item id and an array of `components`, put them towards completing the recipe. Each item in the `components` array should be an array of the format `[itemID, defIndex]` where `itemID` is the ID of the item to be used and `defIndex` is the defIndex from the recipe's schema that the item should contribute to. `FulfillDynamicRecipeComponentResponse` will be emitted when complete.
+
 # Events
 
 ### connectedToGC

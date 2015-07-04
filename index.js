@@ -17,9 +17,9 @@ function TeamFortress2(steam) {
 	this.haveGCSession = false;
 	this._hadGCSession = false;
 	this._isInTF2 = false;
-	
+
 	var self = this;
-	
+
 	// "extend" the default steam.gamesPlayed function so we can catch when TF2 starts up
 	var gamesPlayed = steam.gamesPlayed;
 	steam.gamesPlayed = function(appids) {
@@ -33,24 +33,24 @@ function TeamFortress2(steam) {
 				clearInterval(self._helloInterval);
 				self._helloInterval = null;
 			}
-			
+
 			self._isInTF2 = false;
 			self.haveGCSession = false;
 			self._hadGCSession = false;
 		}
-		
+
 		gamesPlayed.call(steam, appids);
 	};
-	
+
 	steam.on('fromGC', function(appID, type, body) {
 		if(appID != 440) {
 			// Not from the TF2 GC
 			return;
 		}
-		
+
 		var protobuf = !!(type & protomask);
 		type &= ~protomask;
-		
+
 		if(self._handlers[type]) {
 			self._handlers[type].call(self, protobuf ? body : ByteBuffer.wrap(body, ByteBuffer.LITTLE_ENDIAN));
 		} else {
@@ -61,11 +61,11 @@ function TeamFortress2(steam) {
 					break;
 				}
 			}
-			
+
 			self.emit('debug', "Got unhandled GC message " + msgName + (protobuf ? " (protobuf)" : ""));
 		}
 	});
-	
+
 	steam.on('loggedOff', function() {
 		self._isInTF2 = false;
 		self._hadGCSession = self.haveGCSession;
@@ -74,7 +74,7 @@ function TeamFortress2(steam) {
 			self.haveGCSession = false;
 		}
 	});
-	
+
 	steam.on('error', function(e) {
 		self._isInTF2 = false;
 		self._hadGCSession = false;
@@ -83,7 +83,7 @@ function TeamFortress2(steam) {
 			self.haveGCSession = false;
 		}
 	});
-	
+
 	steam.on('loggedOn', function() {
 		if(self._hadGCSession) {
 			self._connect();
@@ -96,7 +96,7 @@ TeamFortress2.prototype._connect = function() {
 	if(!this._isInTF2 || this._helloInterval) {
 		return; // We're not in TF2 or we're already trying to connect
 	}
-	
+
 	var self = this;
 	this._helloInterval = setInterval(function() {
 		if(self.haveGCSession) {
@@ -104,7 +104,7 @@ TeamFortress2.prototype._connect = function() {
 			self._helloInterval = null;
 			return;
 		}
-		
+
 		self._send(Language.ClientHello, Protos.CMsgClientHello, {});
 	}, 5000);
 };
@@ -113,7 +113,7 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	if(!this._steam.loggedOn) {
 		return false;
 	}
-	
+
 	var msgName = type;
 	for(var i in Language) {
 		if(Language[i] == type) {
@@ -121,16 +121,16 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 			break;
 		}
 	}
-	
+
 	this.emit('debug', "Sending GC message " + msgName);
-	
+
 	if(protobuf) {
 		this._steam.toGC(440, type | protomask, (new protobuf(body)).toBuffer());
 	} else {
 		// This is a ByteBuffer
 		this._steam.toGC(440, type, body.flip().toBuffer());
 	}
-	
+
 	return true;
 };
 
@@ -149,7 +149,7 @@ TeamFortress2.prototype.craft = function(items, recipe) {
 	for(var i = 0; i < items.length; i++) {
 		buffer.writeUint64(coerceToLong(items[i]));
 	}
-	
+
 	this._send(Language.Craft, null, buffer);
 };
 
@@ -253,6 +253,18 @@ TeamFortress2.prototype.equipItem = function(itemID, classID, slot) {
 
 TeamFortress2.prototype.requestSpyVsEngiWarStats = function() {
 	this._send(Language.SpyVsEngyWar_RequestGlobalStats, Protos.CGCMsgGC_SpyVsEngyWar_RequestGlobalStats, {});
+};
+
+TeamFortress2.prototype.fulfillRecipe = function(components, recipe) {
+	this._send(Language.FulfillDynamicRecipeComponent, Protos.CMsgFulfillDynamicRecipeComponent, {
+		'toolItemId':recipe,
+		'consumptionComponents': components.map(function(component) {
+			return {
+				subjectItemId: component[0],
+				attributeIndex: component[1]
+			}
+		})
+	});
 };
 
 TeamFortress2.prototype._handlers = {};
