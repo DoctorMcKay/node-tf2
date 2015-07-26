@@ -17,6 +17,7 @@
 		"protobufjs": "3.8.x",
 		"request": "2.44.x",
 		"steamid": "0.1.x",
-		"bytebuffer": "3.5.x"
+		"bytebuffer": "3.5.x",
+		"steam": "^1.0.0"
 	}
 }
