@@ -67,3 +67,10 @@ TeamFortress2.ItemSlot = {
 	Taunt7: 17,
 	Taunt8: 18
 };
+
+TeamFortress2.ItemFlags = {
+	CannotTrade: (1 << 0),
+	CannotCraft: (1 << 1),
+	NotEcon: (1 << 3),
+	Preview: (1 << 7)
+};
