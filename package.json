@@ -13,11 +13,11 @@
 		"url": "https://github.com/DoctorMcKay/node-tf2.git"
 	},
 	"dependencies": {
-		"vdf": "0.0.x",
-		"protobufjs": "3.8.x",
-		"request": "2.44.x",
-		"steamid": "0.1.x",
-		"bytebuffer": "3.5.x",
+		"vdf": "^0.0.2",
+		"protobufjs": "^4.0.0",
+		"request": "^2.60.0",
+		"steamid": "^0.3.1",
+		"bytebuffer": "^4.0.0",
 		"steam": "^1.0.0"
 	}
 }
