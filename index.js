@@ -111,7 +111,7 @@ TeamFortress2.prototype._connect = function() {
 		}
 	}
 
-	this._helloInterval = setInterval(sendHello, 30000);
+	this._helloInterval = setInterval(sendHello, 5000);
 	sendHello();
 };
 
