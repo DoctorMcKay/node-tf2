@@ -1,6 +1,6 @@
 # Team Fortress 2 for Node.js
 
-This module provides a very flexible interface for interacting with the [Team Fortress 2](http://store.steampowered.com) Game Coordinator. It's designed to work with a [node-steam](https://github.com/seishun/node-steam) instance.
+This module provides a very flexible interface for interacting with the [Team Fortress 2](http://store.steampowered.com) Game Coordinator. It's designed to work with a [node-steam SteamUser](https://github.com/seishun/node-steam/tree/master/lib/handlers/user) or [node-steam-user SteamUser](https://github.com/DoctorMcKay/node-steam-user) instance.
 
 **Use 1.1.5 with node-steam 0.6.x, and 2.0.0 or greater with node-steam 1.0.0 or greater.**
 
@@ -10,20 +10,31 @@ First, install it from npm:
 
 	$ npm install tf2
 
-Require the module and call its constructor with your node-steam instance:
+Require the module and call its constructor with your SteamUser instance:
 
 ```js
 var Steam = require('steam');
 var TeamFortress2 = require('tf2');
 
 var client = new Steam.SteamClient();
-var tf2 = new TeamFortress2(client);
+var user = new Steam.SteamUser(client);
+var tf2 = new TeamFortress2(user);
 ```
 
-To initialize your GC connection, just launch TF2 via node-steam normally:
+or
 
 ```js
-client.gamesPlayed([440]);
+var SteamUser = require('steam-user');
+var TeamFortress2 = require('tf2');
+
+var user = new SteamUser();
+var tf2 = new TeamFortress2(user);
+```
+
+To initialize your GC connection, just launch TF2 via SteamUser normally:
+
+```js
+user.gamesPlayed([440]);
 ```
 
 node-tf2 will emit a `connectedToGC` event when the game coordinator connection has been successfully established. You shouldn't try to do anything before you receive that event.

@@ -8,11 +8,17 @@ var Protos = require('./protos.js');
 
 var handlers = TeamFortress2.prototype._handlers;
 
-// ClientWelcome and ClientGoodbye
+// ClientWelcome, ServerWelcome, ClientGoodbye, and ServerGoodbye
 handlers[Language.ClientWelcome] = function(body) {
 	var proto = Protos.CMsgClientWelcome.decode(body);
 	this.haveGCSession = true;
 	this.emit('connectedToGC', proto.version);
+};
+
+handlers[Language.ServerWelcome] = function(body) {
+	var proto = Protos.CMsgServerWelcome.decode(body);
+	this.haveGCSession = true;
+	this.emit('connectedToGC', proto.activeVersion);
 };
 
 handlers[Language.ClientGoodbye] = function(body) {
@@ -23,6 +29,17 @@ handlers[Language.ClientGoodbye] = function(body) {
 		this.haveGCSession = false;
 	}
 	
+	this.emit('disconnectedFromGC', proto.reason);
+};
+
+handlers[Language.ServerGoodbye] = function(body) {
+	var proto = Protos.CMsgServerGoodbye.decode(body);
+
+	if(this.haveGCSession) {
+		this._connect(); // Try to reconnect
+		this.haveGCSession = false;
+	}
+
 	this.emit('disconnectedFromGC', proto.reason);
 };
 

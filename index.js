@@ -1,9 +1,8 @@
 var vdf = require('vdf');
 var fs = require('fs');
+var Steam = require('steam');
 var SteamID = require('steamid');
 var ByteBuffer = require('bytebuffer');
-
-var protomask = 0x80000000;
 
 var Language = require('./language.js');
 var Protos = require('./protos.js');
@@ -13,46 +12,19 @@ module.exports = TeamFortress2;
 require('util').inherits(TeamFortress2, require('events').EventEmitter);
 
 function TeamFortress2(steam) {
-	this._steam = steam;
+	this._steam = steam.client || steam._client; // SteamClient is _client in the official SteamUser and client in node-steam-user
+	this._gc = new Steam.SteamGameCoordinator(this._steam, 440);
 	this.haveGCSession = false;
 	this._hadGCSession = false;
 	this._isInTF2 = false;
 	
 	var self = this;
 	
-	// "extend" the default steam.gamesPlayed function so we can catch when TF2 starts up
-	var gamesPlayed = steam.gamesPlayed;
-	steam.gamesPlayed = function(appids) {
-		if(appids.indexOf(440) != -1) {
-			self._isInTF2 = true;
-			if(!self.haveGCSession) {
-				self._connect();
-			}
-		} else {
-			if(self._helloInterval) {
-				clearInterval(self._helloInterval);
-				self._helloInterval = null;
-			}
-			
-			self._isInTF2 = false;
-			self.haveGCSession = false;
-			self._hadGCSession = false;
-		}
+	this._gc.on('message', function(header, body, callback) {
+		var protobuf = !!header.proto;
 		
-		gamesPlayed.call(steam, appids);
-	};
-	
-	steam.on('fromGC', function(appID, type, body) {
-		if(appID != 440) {
-			// Not from the TF2 GC
-			return;
-		}
-		
-		var protobuf = !!(type & protomask);
-		type &= ~protomask;
-		
-		if(self._handlers[type]) {
-			self._handlers[type].call(self, protobuf ? body : ByteBuffer.wrap(body, ByteBuffer.LITTLE_ENDIAN));
+		if(self._handlers[header.msg]) {
+			self._handlers[header.msg].call(self, protobuf ? body : ByteBuffer.wrap(body, ByteBuffer.LITTLE_ENDIAN));
 		} else {
 			var msgName = type;
 			for(var i in Language) {
@@ -65,8 +37,34 @@ function TeamFortress2(steam) {
 			self.emit('debug', "Got unhandled GC message " + msgName + (protobuf ? " (protobuf)" : ""));
 		}
 	});
+
+	// "extend" the default steam.gamesPlayed function so we can catch when TF2 starts up
+	var gamesPlayed = steam.gamesPlayed;
+	steam.gamesPlayed = function(appids) {
+		if(typeof appids === 'number') {
+			appids = [appids];
+		}
+
+		if(appids.indexOf(440) != -1) {
+			self._isInTF2 = true;
+			if(!self.haveGCSession) {
+				self._connect();
+			}
+		} else {
+			if(self._helloInterval) {
+				clearInterval(self._helloInterval);
+				self._helloInterval = null;
+			}
+
+			self._isInTF2 = false;
+			self.haveGCSession = false;
+			self._hadGCSession = false;
+		}
+
+		gamesPlayed.call(steam, appids);
+	};
 	
-	steam.on('loggedOff', function() {
+	this._steam.on('loggedOff', function() {
 		self._isInTF2 = false;
 		self._hadGCSession = self.haveGCSession;
 		if(self.haveGCSession) {
@@ -74,8 +72,8 @@ function TeamFortress2(steam) {
 			self.haveGCSession = false;
 		}
 	});
-	
-	steam.on('error', function(e) {
+
+	this._steam.on('error', function(e) {
 		self._isInTF2 = false;
 		self._hadGCSession = false;
 		if(self.haveGCSession) {
@@ -83,9 +81,9 @@ function TeamFortress2(steam) {
 			self.haveGCSession = false;
 		}
 	});
-	
-	steam.on('loggedOn', function() {
-		if(self._hadGCSession) {
+
+	this._steam.on('logOnResponse', function(response) {
+		if(response.eresult == Steam.EResult.OK && self._hadGCSession) {
 			self._connect();
 			self._hadGCSession = false;
 		}
@@ -98,15 +96,28 @@ TeamFortress2.prototype._connect = function() {
 	}
 	
 	var self = this;
-	this._helloInterval = setInterval(function() {
+
+	function sendHello() {
 		if(self.haveGCSession) {
 			clearInterval(self._helloInterval);
 			self._helloInterval = null;
 			return;
 		}
-		
-		self._send(Language.ClientHello, Protos.CMsgClientHello, {});
-	}, 5000);
+
+		if(self._isServer()) {
+			self._send(Language.ServerHello, Protos.CMsgServerHello, {});
+		} else {
+			self._send(Language.ClientHello, Protos.CMsgClientHello, {});
+		}
+	}
+
+	this._helloInterval = setInterval(sendHello, 30000);
+	sendHello();
+};
+
+TeamFortress2.prototype._isServer = function() {
+	var sid = new SteamID(this._steam.steamID);
+	return (sid.type == SteamID.Type.ANON_GAMESERVER || sid.type == SteamID.Type.GAMESERVER);
 };
 
 TeamFortress2.prototype._send = function(type, protobuf, body) {
@@ -125,10 +136,10 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	this.emit('debug', "Sending GC message " + msgName);
 	
 	if(protobuf) {
-		this._steam.toGC(440, type | protomask, (new protobuf(body)).toBuffer());
+		this._gc.send({"msg": type, "proto": {}}, (new protobuf(body)).toBuffer());
 	} else {
 		// This is a ByteBuffer
-		this._steam.toGC(440, type, body.flip().toBuffer());
+		this._gc.send({"msg": type}, body.flip().toBuffer());
 	}
 	
 	return true;
