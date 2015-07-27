@@ -169,6 +169,18 @@ TeamFortress2.prototype._checkLocalSchema = function() {
 
 		try {
 			self.itemSchema = JSON.parse(file);
+
+			// Build an ItemQuality enum
+			TeamFortress2.ItemQuality = {};
+			console.log(self.itemSchema.qualities);
+			for(var i in self.itemSchema.qualities) {
+				if(!self.itemSchema.qualities.hasOwnProperty(i)) {
+					continue;
+				}
+
+				TeamFortress2.ItemQuality[i.charAt(0).toUpperCase() + i.substring(1)] = parseInt(self.itemSchema.qualities[i].value, 10);
+			}
+
 			self.emit('itemSchemaLoaded');
 		} catch(e) {
 			// We don't care if it's malformed

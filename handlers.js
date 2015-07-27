@@ -70,6 +70,18 @@ handlers[Language.UpdateItemSchema] = function(body) {
 		
 		self.itemSchema = vdf.parse(body).items_game;
 		self.itemSchema.version = version;
+
+		// Build an ItemQuality enum
+		TeamFortress2.ItemQuality = {};
+		console.log(self.itemSchema.qualities);
+		for(var i in self.itemSchema.qualities) {
+			if(!self.itemSchema.qualities.hasOwnProperty(i)) {
+				continue;
+			}
+
+			TeamFortress2.ItemQuality[i.charAt(0).toUpperCase() + i.substring(1)] = parseInt(self.itemSchema.qualities[i].value, 10);
+		}
+
 		self.emit('itemSchemaLoaded');
 
 		self.backpack.forEach(function(item) {
