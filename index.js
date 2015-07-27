@@ -3,6 +3,7 @@ var fs = require('fs');
 var Steam = require('steam');
 var SteamID = require('steamid');
 var ByteBuffer = require('bytebuffer');
+var AppDirectory = require('appdirectory');
 
 var Language = require('./language.js');
 var Protos = require('./protos.js');
@@ -17,6 +18,13 @@ function TeamFortress2(steam) {
 	this.haveGCSession = false;
 	this._hadGCSession = false;
 	this._isInTF2 = false;
+
+	var dirs = new AppDirectory({
+		"appName": "node-tf2",
+		"appAuthor": "doctormckay"
+	});
+
+	this.dataDirectory = dirs.userData();
 	
 	var self = this;
 	
@@ -26,9 +34,9 @@ function TeamFortress2(steam) {
 		if(self._handlers[header.msg]) {
 			self._handlers[header.msg].call(self, protobuf ? body : ByteBuffer.wrap(body, ByteBuffer.LITTLE_ENDIAN));
 		} else {
-			var msgName = type;
+			var msgName = header.msg;
 			for(var i in Language) {
-				if(Language[i] == type) {
+				if(Language[i] == header.msg) {
 					msgName = i;
 					break;
 				}
@@ -91,6 +99,8 @@ function TeamFortress2(steam) {
 }
 
 TeamFortress2.prototype._connect = function() {
+	this._checkLocalSchema();
+
 	if(!this._isInTF2 || this._helloInterval) {
 		return; // We're not in TF2 or we're already trying to connect
 	}
@@ -143,6 +153,26 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	}
 	
 	return true;
+};
+
+TeamFortress2.prototype._checkLocalSchema = function() {
+	if(!this.dataDirectory || this.itemSchema) {
+		return;
+	}
+
+	var self = this;
+	fs.readFile(this.dataDirectory + '/item_schema.json', function(err, file) {
+		if(err) {
+			// Doesn't exist or something, we don't care
+			return;
+		}
+
+		try {
+			self.itemSchema = JSON.parse(file);
+		} catch(e) {
+			// We don't care if it's malformed
+		}
+	})
 };
 
 TeamFortress2.prototype.setLang = function(langFile) {

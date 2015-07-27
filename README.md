@@ -45,7 +45,19 @@ There are some enums that are used by various methods and events. You can find t
 
 # Properties
 
-There are a few useful read-only properties available to you.
+There are a few useful properties available to you. All properties are read-only unless specified otherwise.
+
+### dataDirectory
+
+If defined, data will be saved to this directory. Currently, the only saved data is the item schema, which will be loaded if present on connect.
+
+You can change this to your desired value (or `null` to disable the feature entirely) before you first attempt to connect.
+
+Defaults to a platform-specific path:
+
+- On Windows, this is `%localappdata%\doctormckay\node-tf2`
+- On Mac, this is `~/Library/Application Support/node-tf2`
+- On Linux, this is `$XDG_DATA_HOME/node-tf2`, or `~/.local/share/node-tf2` if `$XDG_DATA_HOME` isn't defined or is empty
 
 ### haveGCSession
 

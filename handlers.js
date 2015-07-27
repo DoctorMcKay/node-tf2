@@ -13,12 +13,16 @@ handlers[Language.ClientWelcome] = function(body) {
 	var proto = Protos.CMsgClientWelcome.decode(body);
 	this.haveGCSession = true;
 	this.emit('connectedToGC', proto.version);
+
+	this._checkLocalSchema();
 };
 
 handlers[Language.ServerWelcome] = function(body) {
 	var proto = Protos.CMsgServerWelcome.decode(body);
 	this.haveGCSession = true;
 	this.emit('connectedToGC', proto.activeVersion);
+
+	this._checkLocalSchema();
 };
 
 handlers[Language.ClientGoodbye] = function(body) {
@@ -57,7 +61,16 @@ handlers[Language.UpdateItemSchema] = function(body) {
 		}
 		
 		self.itemSchema = vdf.parse(body).items_game;
+		self.itemSchema.version = proto.itemSchemaVersion.toString(16).toUpperCase();
 		self.emit('itemSchemaLoaded');
+
+		if(self.dataDirectory) {
+			require('mkdirp')(self.dataDirectory, function(err) {
+				if(!err) {
+					fs.writeFile(self.dataDirectory + '/item_schema.json', JSON.stringify(self.itemSchema, null, "\t"));
+				}
+			});
+		}
 	});
 };
 
