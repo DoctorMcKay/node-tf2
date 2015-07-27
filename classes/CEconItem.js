@@ -1,10 +1,13 @@
+var CEconItemAttribute = require('./CEconItemAttribute.js');
+
+var g_AttributeNameCache = {};
+
 module.exports = CEconItem;
 
 function CEconItem(soItem, tf2) {
 	this._tf2 = tf2;
 
 	this._inventory = soItem.inventory;
-	this._soAttributes = soItem.attribute;
 
 	this.id = soItem.id.toString();
 	this.defindex = soItem.defIndex;
@@ -19,6 +22,13 @@ function CEconItem(soItem, tf2) {
 	this.inUse = soItem.inUse;
 	this.style = soItem.style;
 	// Maybe equipped state at some point
+
+	var attributes = {};
+	(soItem.attribute || []).forEach(function(attribute) {
+		attributes[attribute.defIndex] = new CEconItemAttribute(attribute.defIndex, attribute.valueBytes, tf2);
+	});
+
+	this.attributes = attributes;
 }
 
 CEconItem.prototype.getDetails = function() {
@@ -57,6 +67,22 @@ CEconItem.prototype.getDetails = function() {
 		});
 	}
 
+	if(item.attributes) {
+		var defindex;
+		var attributes = {};
+		for(var name in item.attributes) {
+			if(!item.attributes.hasOwnProperty(name) || !(defindex = getAttributeDefindexByName(this._tf2.itemSchema, name)) || !this._tf2.itemSchema.attributes[defindex]) {
+				continue;
+			}
+
+			attributes[defindex] = new CEconItemAttribute(defindex, item.attributes[name].value, this._tf2);
+		}
+
+		item.attributes = attributes;
+	} else {
+		item.attributes = {};
+	}
+
 	this._details = item;
 	return item;
 };
@@ -86,3 +112,23 @@ CEconItem.prototype._applyPrefab = function(item, prefabName) {
 CEconItem.prototype.getBackpackPosition = function() {
 	return (this._inventory >>> 30) & 1 ? 0 : this._inventory & 0x0000FFFF;
 };
+
+function getAttributeDefindexByName(schema, name) {
+	if(name in g_AttributeNameCache) {
+		return g_AttributeNameCache[name];
+	}
+
+	for(var i in schema.attributes) {
+		if(!schema.attributes.hasOwnProperty(i)) {
+			continue;
+		}
+
+		if(schema.attributes[i].name == name) {
+			g_AttributeNameCache[name] = i;
+			return i;
+		}
+	}
+
+	g_AttributeNameCache[name] = null;
+	return null;
+}
