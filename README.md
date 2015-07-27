@@ -34,6 +34,12 @@ var tf2 = new TeamFortress2(user);
 To initialize your GC connection, just launch TF2 via SteamUser normally:
 
 ```js
+user.gamesPlayed("games_played": [{"game_id": 440}]);
+```
+
+or
+
+```js
 user.gamesPlayed([440]);
 ```
 
