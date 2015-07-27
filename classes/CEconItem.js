@@ -1,3 +1,4 @@
+var TeamFortress2 = require('../index.js');
 var CEconItemAttribute = require('./CEconItemAttribute.js');
 
 var g_AttributeNameCache = {};
@@ -143,6 +144,27 @@ CEconItem.prototype.getAttributeValue = function(attribute) {
 	}
 
 	return attrib.value;
+};
+
+CEconItem.prototype.isTradable = function() {
+	if(this.flags & TeamFortress2.ItemFlags.CannotTrade || this.flags & TeamFortress2.ItemFlags.NotEcon || this.flags & TeamFortress2.ItemFlags.Preview) {
+		return false;
+	}
+
+	if(this.getAttributeValue('cannot trade')) {
+		return false;
+	}
+
+	var tradableAfter = this.getAttributeValue('tradable after date');
+	if(tradableAfter && tradableAfter.getTime() > Date.now()) {
+		return false;
+	}
+
+	if(this.origin == TeamFortress2.ItemOrigin.Achievement) {
+		return false;
+	}
+
+	return true;
 };
 
 function getAttributeDefindexByName(schema, name) {
