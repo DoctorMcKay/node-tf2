@@ -193,6 +193,46 @@ CEconItem.prototype.isCraftable = function() {
 	return true;
 };
 
+CEconItem.prototype.setStyle = function(style) {
+	this._tf2.setStyle(this, style);
+};
+
+CEconItem.prototype.setPosition = function(position) {
+	this._tf2.setPosition(this, position);
+};
+
+CEconItem.prototype.delete = function() {
+	this._tf2.deleteItem(this);
+};
+
+CEconItem.prototype.wrap = function(wrap) {
+	this._tf2.wrapItem(wrap, this);
+};
+
+CEconItem.prototype.deliverGift = function(steamID) {
+	this._tf2.deliverGift(this, steamID);
+};
+
+CEconItem.prototype.unwrap = function() {
+	this._tf2.unwrapGift(this);
+};
+
+CEconItem.prototype.use = function() {
+	this._tf2.useItem(this);
+};
+
+CEconItem.prototype.openWithKey = function(key) {
+	this._tf2.openCrate(key, this);
+};
+
+CEconItem.prototype.unlockCrate = function(crate) {
+	this._tf2.openCrate(this, crate);
+};
+
+CEconItem.prototype.equip = function(classID, slot) {
+	this._tf2.equipItem(this, classID, slot);
+};
+
 function getAttributeDefindexByName(schema, name) {
 	if(name in g_AttributeNameCache) {
 		return g_AttributeNameCache[name];
