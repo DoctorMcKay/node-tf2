@@ -201,7 +201,7 @@ TeamFortress2.prototype.craft = function(items, recipe) {
 	buffer.writeInt16(recipe || -2); // -2 is wildcard
 	buffer.writeInt16(items.length);
 	for(var i = 0; i < items.length; i++) {
-		buffer.writeUint64(coerceToLong(items[i]));
+		buffer.writeUint64(coerceToLong(items[i].id || items[i]));
 	}
 	
 	this._send(Language.Craft, null, buffer);
@@ -228,14 +228,14 @@ TeamFortress2.prototype.respondToTrade = function(tradeID, accept) {
 
 TeamFortress2.prototype.setStyle = function(item, style) {
 	var buffer = new ByteBuffer(12, ByteBuffer.LITTLE_ENDIAN);
-	buffer.writeUint64(coerceToLong(item));
+	buffer.writeUint64(coerceToLong(item.id || item));
 	buffer.writeUint32(style);
 	this._send(Language.SetItemStyle, null, buffer);
 };
 
 TeamFortress2.prototype.setPosition = function(item, position) {
 	var buffer = new ByteBuffer(16, ByteBuffer.LITTLE_ENDIAN);
-	buffer.writeUint64(coerceToLong(item));
+	buffer.writeUint64(coerceToLong(item.id || item));
 	buffer.writeUint64(coerceToLong(position));
 	this._send(Language.SetSingleItemPosition, null, buffer);
 };
@@ -246,32 +246,32 @@ TeamFortress2.prototype.setPositions = function(items) {
 
 TeamFortress2.prototype.deleteItem = function(item) {
 	var buffer = new ByteBuffer(8, ByteBuffer.LITTLE_ENDIAN);
-	buffer.writeUint64(coerceToLong(item));
+	buffer.writeUint64(coerceToLong(item.id || item));
 	this._send(Language.Delete, null, buffer);
 };
 
-TeamFortress2.prototype.wrapItem = function(wrapID, itemID) {
+TeamFortress2.prototype.wrapItem = function(wrap, item) {
 	var buffer = new ByteBuffer(16, ByteBuffer.LITTLE_ENDIAN);
-	buffer.writeUint64(coerceToLong(wrapID));
-	buffer.writeUint64(coerceToLong(itemID));
+	buffer.writeUint64(coerceToLong(wrap.id || wrap));
+	buffer.writeUint64(coerceToLong(item.id || item));
 	this._send(Language.GiftWrapItem, null, buffer);
 };
 
 TeamFortress2.prototype.deliverGift = function(gift, steamID) {
 	var buffer = new ByteBuffer(16, ByteBuffer.LITTLE_ENDIAN);
-	buffer.writeUint64(coerceToLong(gift));
+	buffer.writeUint64(coerceToLong(gift.id || gift));
 	buffer.writeUint64(coerceToLong(steamID));
 	this._send(Language.DeliverGift, null, buffer);
 };
 
 TeamFortress2.prototype.unwrapGift = function(gift) {
 	var buffer = new ByteBuffer(8, ByteBuffer.LITTLE_ENDIAN);
-	buffer.writeUint64(coerceToLong(gift));
+	buffer.writeUint64(coerceToLong(gift.id || gift));
 	this._send(Language.UnwrapGiftRequest, null, buffer);
 };
 
 TeamFortress2.prototype.useItem = function(item) {
-	this._send(Language.UseItemRequest, Protos.CMsgUseItem, {"itemId": item});
+	this._send(Language.UseItemRequest, Protos.CMsgUseItem, {"itemId": item.id || item});
 };
 
 TeamFortress2.prototype.sortBackpack = function(sortType) {
@@ -294,15 +294,15 @@ TeamFortress2.prototype.resetServerIdentity = function(id) {
 	this._send(Language.GameServer_ResetIdentity, Protos.CMsgGC_GameServer_ResetIdentity, {"gameServerAccountId": id});
 };
 
-TeamFortress2.prototype.openCrate = function(keyID, crateID) {
+TeamFortress2.prototype.openCrate = function(key, crate) {
 	var buffer = new ByteBuffer(16, ByteBuffer.LITTLE_ENDIAN);
-	buffer.writeUint64(coerceToLong(keyID));
-	buffer.writeUint64(coerceToLong(crateID));
+	buffer.writeUint64(coerceToLong(key.id || key));
+	buffer.writeUint64(coerceToLong(crate.id || crate));
 	this._send(Language.UnlockCrate, null, buffer);
 };
 
-TeamFortress2.prototype.equipItem = function(itemID, classID, slot) {
-	this._send(Language.AdjustItemEquippedState, Protos.CMsgAdjustItemEquippedState, {"itemId": itemID, "newClass": classID, "newSlot": slot});
+TeamFortress2.prototype.equipItem = function(item, classID, slot) {
+	this._send(Language.AdjustItemEquippedState, Protos.CMsgAdjustItemEquippedState, {"itemId": item.id || item, "newClass": classID, "newSlot": slot});
 };
 
 TeamFortress2.prototype.requestSpyVsEngiWarStats = function() {
