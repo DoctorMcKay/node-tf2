@@ -312,6 +312,10 @@ handlers[Language.CraftResponse] = function(body) {
 	this.emit('craftingComplete', blueprint, idList);
 };
 
+handlers[Language.BackpackSortFinished] = function(body) {
+	this.emit('sortFinished');
+};
+
 // Professor Speks
 handlers[Language.FreeTrial_ThankedBySomeone] = function(body) {
 	var proto = Protos.CMsgTFThankedBySomeone.decode(body);
