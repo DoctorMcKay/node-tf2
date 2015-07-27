@@ -72,6 +72,10 @@ handlers[Language.UpdateItemSchema] = function(body) {
 		self.itemSchema.version = version;
 		self.emit('itemSchemaLoaded');
 
+		self.backpack.forEach(function(item) {
+			delete item._details;
+		});
+
 		if(self.dataDirectory) {
 			require('mkdirp')(self.dataDirectory, function(err) {
 				if(!err) {

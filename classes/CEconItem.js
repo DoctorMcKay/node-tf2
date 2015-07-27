@@ -22,8 +22,8 @@ function CEconItem(soItem, tf2) {
 }
 
 CEconItem.prototype.getDetails = function() {
-	if(this.details) {
-		return this.details;
+	if(this._details) {
+		return this._details;
 	}
 
 	if(!this._tf2.itemSchema || !this._tf2.itemSchema.items || !this._tf2.itemSchema.items[this.defindex]) {
@@ -57,7 +57,7 @@ CEconItem.prototype.getDetails = function() {
 		});
 	}
 
-	this.details = item;
+	this._details = item;
 	return item;
 };
 
