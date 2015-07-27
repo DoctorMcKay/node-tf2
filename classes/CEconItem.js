@@ -167,6 +167,18 @@ CEconItem.prototype.isTradable = function() {
 	return true;
 };
 
+CEconItem.prototype.isCraftable = function() {
+	if(this.flags & TeamFortress2.ItemFlags.CannotCraft || this.flags & TeamFortress2.ItemFlags.NotEcon || this.flags & TeamFortress2.ItemFlags.Preview) {
+		return false;
+	}
+
+	if(this.getAttributeValue('never craftable')) {
+		return false;
+	}
+
+	return true;
+};
+
 function getAttributeDefindexByName(schema, name) {
 	if(name in g_AttributeNameCache) {
 		return g_AttributeNameCache[name];
