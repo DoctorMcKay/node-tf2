@@ -169,6 +169,7 @@ TeamFortress2.prototype._checkLocalSchema = function() {
 
 		try {
 			self.itemSchema = JSON.parse(file);
+			self.emit('itemSchemaLoaded');
 		} catch(e) {
 			// We don't care if it's malformed
 		}
