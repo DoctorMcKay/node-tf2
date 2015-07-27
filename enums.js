@@ -68,6 +68,13 @@ TeamFortress2.ItemSlot = {
 	Taunt8: 18
 };
 
+TeamFortress2.SortType = {
+	"Quality": 3,
+	"Type": 4,
+	"Class": 101,
+	"LoadoutSlot": 102
+};
+
 TeamFortress2.ItemFlags = {
 	CannotTrade: (1 << 0),
 	CannotCraft: (1 << 1),
