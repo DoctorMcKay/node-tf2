@@ -52,6 +52,12 @@ handlers[Language.ServerGoodbye] = function(body) {
 // Item schema
 handlers[Language.UpdateItemSchema] = function(body) {
 	var proto = Protos.CMsgUpdateItemSchema.decode(body);
+	var version = proto.itemSchemaVersion.toString(16).toUpperCase();
+
+	if(this.itemSchema && this.itemSchema.version == version) {
+		return; // Ignore repeated receipts of the same version
+	}
+
 	this.emit('itemSchema', proto.itemSchemaVersion.toString(16).toUpperCase(), proto.itemsGameUrl);
 	
 	var self = this;
