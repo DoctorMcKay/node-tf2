@@ -164,6 +164,13 @@ CEconItem.prototype.isTradable = function() {
 		return false;
 	}
 
+	if(TeamFortress2.ItemQuality && !this.getAttributeValue('always tradable')) {
+		// The "always tradable" attribute overrides quality-based untradability
+		if([TeamFortress2.ItemQuality.Community, TeamFortress2.ItemQuality.Developer, TeamFortress2.ItemQuality.Selfmade].indexOf(this.quality) != -1) {
+			return false;
+		}
+	}
+
 	return true;
 };
 
@@ -174,6 +181,13 @@ CEconItem.prototype.isCraftable = function() {
 
 	if(this.getAttributeValue('never craftable')) {
 		return false;
+	}
+
+	if(TeamFortress2.ItemQuality && !this.getAttributeValue('always tradable')) {
+		// The "always tradable" attribute overrides quality-based uncraftability
+		if([TeamFortress2.ItemQuality.Community, TeamFortress2.ItemQuality.Developer, TeamFortress2.ItemQuality.Selfmade].indexOf(this.quality) != -1) {
+			return false;
+		}
 	}
 
 	return true;
