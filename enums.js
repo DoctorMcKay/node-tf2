@@ -74,3 +74,30 @@ TeamFortress2.ItemFlags = {
 	NotEcon: (1 << 3),
 	Preview: (1 << 7)
 };
+
+TeamFortress2.ItemOrigin = {
+	"TimedDrop": 0,
+	"Achievement": 1,
+	"Purchased": 2,
+	"Traded": 3,
+	"Crafted": 4,
+	"StorePromotion": 5,
+	"Gifted": 6,
+	"SupportGranted": 7,
+	"FoundInCrate": 8,
+	"Earned": 9,
+	"ThirdPartyPromotion": 10,
+	"WrappedGift": 11,
+	"HalloweenDrop": 12,
+	"SteamPurchase": 13,
+	"ForeignItem": 14,
+	"CDKey": 15,
+	"CollectionReward": 16,
+	"PreviewItem": 17,
+	"SteamWorkshopContribution": 18,
+	"PeriodicScoreReward": 19,
+	"MvMBadgeCompletionReward": 20,
+	"MvMSquadSurplusReward": 21,
+	"RecipeOutput": 22,
+	"CompletedContract": 23
+};
