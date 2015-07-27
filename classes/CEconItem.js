@@ -113,6 +113,38 @@ CEconItem.prototype.getBackpackPosition = function() {
 	return (this._inventory >>> 30) & 1 ? 0 : this._inventory & 0x0000FFFF;
 };
 
+CEconItem.prototype.getAttribute = function(attribute) {
+	if(!this._tf2.itemSchema) {
+		return null;
+	}
+
+	if(typeof attribute === 'string' && isNaN(parseInt(attribute, 10))) {
+		if((attribute = getAttributeDefindexByName(this._tf2.itemSchema, attribute)) === null) {
+			return null;
+		}
+	}
+
+	if(this.attributes[attribute]) {
+		return this.attributes[attribute];
+	}
+
+	var details = this.getDetails();
+	if(details.attributes[attribute]) {
+		return details.attributes[attribute];
+	}
+
+	return null;
+};
+
+CEconItem.prototype.getAttributeValue = function(attribute) {
+	var attrib = this.getAttribute(attribute);
+	if(!attrib) {
+		return null;
+	}
+
+	return attrib.value;
+};
+
 function getAttributeDefindexByName(schema, name) {
 	if(name in g_AttributeNameCache) {
 		return g_AttributeNameCache[name];
