@@ -6,6 +6,8 @@ var TeamFortress2 = require('./index.js');
 var Language = require('./language.js');
 var Protos = require('./protos.js');
 
+var CEconItem = require('./classes/CEconItem.js');
+
 var handlers = TeamFortress2.prototype._handlers;
 
 // ClientWelcome, ServerWelcome, ClientGoodbye, and ServerGoodbye
@@ -150,12 +152,7 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 			case 1:
 				// Backpack
 				var items = cache.objectData.map(function(object) {
-					var item = Protos.CSOEconItem.decode(object);
-					var isNew = (item.inventory >>> 30) & 1;
-					item.id = item.id.toString();
-					item.originalId = item.originalId.toString();
-					item.position = (isNew ? 0 : item.inventory & 0xFFFF);
-					return item;
+					return new CEconItem(Protos.CSOEconItem.decode(object), self);
 				});
 				
 				self.backpack = items;
@@ -186,10 +183,7 @@ handlers[Language.SO_Create] = function(body) {
 		return; // We don't have our backpack yet!
 	}
 	
-	var item = Protos.CSOEconItem.decode(proto.objectData);
-	item.id = item.id.toString();
-	item.originalId = item.originalId.toString();
-	item.position = item.inventory & 0x0000FFFF;
+	var item = new CEconItem(Protos.CSOEconItem.decode(proto.objectData), this);
 	this.backpack.push(item);
 	this.emit('itemAcquired', item);
 };
@@ -216,10 +210,7 @@ TeamFortress2.prototype._handleSOUpdate = function(so) {
 				return; // We don't have our backpack yet!
 			}
 			
-			var item = Protos.CSOEconItem.decode(so.objectData);
-			item.id = item.id.toString();
-			item.originalId = item.originalId.toString();
-			item.position = item.inventory & 0x0000FFFF;
+			var item = new CEconItem(Protos.CSOEconItem.decode(so.objectData), this);
 			for(i = 0; i < this.backpack.length; i++) {
 				if(this.backpack[i].id == item.id) {
 					var oldItem = this.backpack[i];
@@ -270,8 +261,7 @@ handlers[Language.SO_Destroy] = function(body) {
 		return; // Not an item
 	}
 	
-	var item = Protos.CSOEconItem.decode(proto.objectData);
-	item.id = item.id.toString();
+	var item = new CEconItem(Protos.CSOEconItem.decode(proto.objectData), this);
 	var itemData = null;
 	for(var i = 0; i < this.backpack.length; i++) {
 		if(this.backpack[i].id == item.id) {
