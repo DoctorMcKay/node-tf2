@@ -84,5 +84,5 @@ CEconItem.prototype._applyPrefab = function(item, prefabName) {
 };
 
 CEconItem.prototype.getBackpackPosition = function() {
-	return this._inventory & 0x0000FFFF;
+	return (this._inventory >>> 30) & 1 ? 0 : this._inventory & 0x0000FFFF;
 };
