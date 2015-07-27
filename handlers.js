@@ -58,7 +58,7 @@ handlers[Language.UpdateItemSchema] = function(body) {
 		return; // Ignore repeated receipts of the same version
 	}
 
-	this.emit('itemSchema', proto.itemSchemaVersion.toString(16).toUpperCase(), proto.itemsGameUrl);
+	this.emit('itemSchema', version, proto.itemsGameUrl, this.itemSchema ? this.itemSchema.version : null);
 	
 	var self = this;
 	request(proto.itemsGameUrl, function(err, response, body) {
@@ -69,7 +69,7 @@ handlers[Language.UpdateItemSchema] = function(body) {
 		}
 		
 		self.itemSchema = vdf.parse(body).items_game;
-		self.itemSchema.version = proto.itemSchemaVersion.toString(16).toUpperCase();
+		self.itemSchema.version = version;
 		self.emit('itemSchemaLoaded');
 
 		if(self.dataDirectory) {
