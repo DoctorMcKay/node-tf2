@@ -26,9 +26,9 @@ function TeamFortress2(steam) {
 		if(self._handlers[header.msg]) {
 			self._handlers[header.msg].call(self, protobuf ? body : ByteBuffer.wrap(body, ByteBuffer.LITTLE_ENDIAN));
 		} else {
-			var msgName = type;
+			var msgName = header.msg;
 			for(var i in Language) {
-				if(Language[i] == type) {
+				if(Language[i] == header.msg) {
 					msgName = i;
 					break;
 				}
