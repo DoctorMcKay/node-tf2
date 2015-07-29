@@ -6,10 +6,6 @@ var g_AttributeNameCache = {};
 module.exports = CEconItem;
 
 function CEconItem(soItem, tf2) {
-	this._tf2 = tf2;
-
-	this._inventory = soItem.inventory;
-
 	this.id = soItem.id.toString();
 	this.defindex = soItem.defIndex;
 	this.quantity = soItem.quantity;
@@ -30,9 +26,32 @@ function CEconItem(soItem, tf2) {
 	});
 
 	this.attributes = attributes;
+
+	Object.defineProperties(this, {
+		"_tf2": {
+			"enumerable": false,
+			"writable": false,
+			"value": tf2
+		},
+		"_inventory": {
+			"enumerable": false,
+			"writable": false,
+			"value": soItem.inventory
+		},
+		"_details": {
+			"enumerable": false,
+			"writable": true
+		},
+		"details": {
+			"enumerable": true,
+			"get": function() {
+				return this._getDetails();
+			}
+		}
+	});
 }
 
-CEconItem.prototype.getDetails = function() {
+CEconItem.prototype._getDetails = function() {
 	if(this._details) {
 		return this._details;
 	}
