@@ -44,24 +44,28 @@ CEconItem.prototype.getDetails = function() {
 	var item = this._tf2.itemSchema.items[this.defindex];
 
 	// Apply any prefabs
-	if(item.prefab && this._tf2.itemSchema.prefabs) {
+	if(!item._prefabbed && item.prefab && this._tf2.itemSchema.prefabs) {
 		var self = this;
 		item.prefab.split(' ').forEach(function(prefab) {
 			self._applyPrefab(item, prefab);
 		});
 	}
 
+	Object.defineProperty(item, '_prefabbed', {"value": true, "enumerable": false});
+
 	// Convert array-like objects into arrays
 	['capabilities', 'tags', 'used_by_classes'].forEach(function(name) {
-		if(item[name]) {
+		if(item[name] && !(item[name] instanceof Array)) {
 			var values = [];
 			for(var i in item[name]) {
-				if(item[name].hasOwnProperty(i) && item[name][i]) {
+				if(item[name].hasOwnProperty(i) && item[name][i] == 1) {
 					values.push(i);
 				}
 			}
 
 			item[name] = values;
+		} else if(!item[name]) {
+			item[name] = [];
 		}
 	});
 
