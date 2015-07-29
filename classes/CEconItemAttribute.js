@@ -21,7 +21,7 @@ function CEconItemAttribute(defindex, value, tf2) {
 		} else {
 			this.value = details.stored_as_integer ? parseInt(value, 10) : parseFloat(value);
 		}
-	} else if(details.attribute_type) {
+	} else if(details.attribute_type && ByteBuffer.isByteBuffer(value)) {
 		// Parse it from a protobuf
 		switch(details.attribute_type) {
 			case 'string':
