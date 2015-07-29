@@ -73,7 +73,6 @@ handlers[Language.UpdateItemSchema] = function(body) {
 
 		// Build an ItemQuality enum
 		TeamFortress2.ItemQuality = {};
-		console.log(self.itemSchema.qualities);
 		for(var i in self.itemSchema.qualities) {
 			if(!self.itemSchema.qualities.hasOwnProperty(i)) {
 				continue;
