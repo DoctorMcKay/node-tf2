@@ -57,4 +57,12 @@ function CEconItemAttribute(defindex, value, tf2) {
 	if(tf2.lang && this.details.description_string && tf2.lang[this.details.description_string.substring(1)]) {
 		this.details.description_string = tf2.lang[this.details.description_string.substring(1)];
 	}
+
+	// Turn number-boolean strings into bools
+	var self = this;
+	['hidden', 'stored_as_integer'].forEach(function(thing) {
+		if(typeof self.details[thing] === 'string') {
+			self.details[thing] = self.details[thing] == '1';
+		}
+	});
 }

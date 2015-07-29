@@ -114,6 +114,12 @@ CEconItem.prototype._getDetails = function() {
 		item.attributes = {};
 	}
 
+	['propername', 'baseitem', 'show_in_armory'].forEach(function(thing) {
+		if(typeof item[thing] === 'string') {
+			item[thing] = item[thing] == '1';
+		}
+	});
+
 	this._details = item;
 	return item;
 };
