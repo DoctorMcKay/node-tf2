@@ -54,7 +54,14 @@ CEconItem.prototype.getDetails = function() {
 	// Convert array-like objects into arrays
 	['capabilities', 'tags', 'used_by_classes'].forEach(function(name) {
 		if(item[name]) {
-			item[name] = Object.keys(item[name]);
+			var values = [];
+			for(var i in item[name]) {
+				if(item[name].hasOwnProperty(i) && item[name][i]) {
+					values.push(i);
+				}
+			}
+
+			item[name] = values;
 		}
 	});
 
