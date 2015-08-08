@@ -48,13 +48,26 @@ function TeamFortress2(steam) {
 
 	// "extend" the default steam.gamesPlayed function so we can catch when TF2 starts up
 	var gamesPlayed = steam.gamesPlayed;
-	steam.gamesPlayed = function(appids) {
-		if(typeof appids === 'number') {
+	steam.gamesPlayed = function(input) {
+		var appids = input;
+
+		if(appids.games_played) {
+			appids = appids.games_played;
+		}
+
+		if(!(appids instanceof Array)) {
 			appids = [appids];
 		}
 
-		if(appids.indexOf(440) != -1) {
-			self._isInTF2 = true;
+		self._isInTF2 = false;
+		for(var i = 0; i < appids.length; i++) {
+			if(appids[i] == 440 || appids[i].game_id == 440) {
+				self._isInTF2 = true;
+				break;
+			}
+		}
+
+		if(self._isInTF2) {
 			if(!self.haveGCSession) {
 				self._connect();
 			}
@@ -64,7 +77,6 @@ function TeamFortress2(steam) {
 				self._helloInterval = null;
 			}
 
-			self._isInTF2 = false;
 			self.haveGCSession = false;
 			self._hadGCSession = false;
 		}

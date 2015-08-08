@@ -282,6 +282,10 @@ handlers[Language.SO_Destroy] = function(body) {
 		return; // Not an item
 	}
 	
+	if(!this.backpack) {
+		return; // We don't have our backpack yet
+	}
+	
 	var item = new CEconItem(Protos.CSOEconItem.decode(proto.objectData), this);
 	var itemData = null;
 	for(var i = 0; i < this.backpack.length; i++) {
