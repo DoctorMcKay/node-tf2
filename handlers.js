@@ -257,6 +257,10 @@ handlers[Language.SO_Destroy] = function(body) {
 		return; // Not an item
 	}
 	
+	if(!this.backpack) {
+		return; // We don't have our backpack yet
+	}
+	
 	var item = Protos.CSOEconItem.decode(proto.objectData);
 	item.id = item.id.toString();
 	var itemData = null;
