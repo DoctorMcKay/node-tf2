@@ -1,4 +1,9 @@
 # Team Fortress 2 for Node.js
+[![npm version](https://img.shields.io/npm/v/tf2.svg)](https://npmjs.com/package/tf2)
+[![npm downloads](https://img.shields.io/npm/dm/tf2.svg)](https://npmjs.com/package/tf2)
+[![dependencies](https://img.shields.io/david/DoctorMcKay/node-tf2.svg)](https://david-dm.org/DoctorMcKay/node-tf2)
+[![license](https://img.shields.io/npm/l/tf2.svg)](https://github.com/DoctorMcKay/node-tf2/blob/master/LICENSE)
+[![paypal](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=N36YVAT42CZ4G&item_name=node%2dtf2&currency_code=USD)
 
 This module provides a very flexible interface for interacting with the [Team Fortress 2](http://store.steampowered.com) Game Coordinator. It's designed to work with a [node-steam SteamUser](https://github.com/seishun/node-steam/tree/master/lib/handlers/user) or [node-steam-user SteamUser](https://github.com/DoctorMcKay/node-steam-user) instance.
 
