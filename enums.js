@@ -108,3 +108,21 @@ TeamFortress2.ItemOrigin = {
 	"RecipeOutput": 22,
 	"CompletedContract": 23
 };
+
+TeamFortress2.AcquisitionMethod = {
+	"Found": 1,
+	"Crafted": 2,
+	"Traded": 3,
+	"Purchased": 4,
+	"FoundInCrate": 5,
+	"Gifted": 6,
+	"Earned": 9,
+	"Refunded": 10,
+	"GiftWrapped": 11,
+	"PeriodicScoreReward": 16,
+	"MvMBadgeCompletionReward": 17,
+	"MvMSquadSurplusReward": 18,
+	"HolidayGift": 19,
+	"RecipeOutput": 21,
+	"QuestOutput": 23
+};
