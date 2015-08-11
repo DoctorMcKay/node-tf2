@@ -157,14 +157,14 @@ CEconItem.prototype.getAcquisitionMethod = function() {
 
 	var method = this._inventory & 0x0000FFFF;
 
-	// Make sure this method is in our enum. If not, default to Found
+	// Make sure this method is in our enum. If not, default to Dropped
 	for(var i in TeamFortress2.AcquisitionMethod) {
 		if(TeamFortress2.AcquisitionMethod.hasOwnProperty(i) && TeamFortress2.AcquisitionMethod[i] == method) {
 			return method;
 		}
 	}
 
-	return TeamFortress2.AcquisitionMethod.Found;
+	return TeamFortress2.AcquisitionMethod.Dropped;
 };
 
 CEconItem.prototype.getAttribute = function(attribute) {

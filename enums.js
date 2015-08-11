@@ -109,8 +109,13 @@ TeamFortress2.ItemOrigin = {
 	"CompletedContract": 23
 };
 
+// Unknown acquisition method indexes:
+// - Promotion
+// - Support
+// - PreviewItem
+// - PreviewItemPurchased
 TeamFortress2.AcquisitionMethod = {
-	"Found": 1,
+	"Dropped": 1,
 	"Crafted": 2,
 	"Traded": 3,
 	"Purchased": 4,
@@ -123,6 +128,7 @@ TeamFortress2.AcquisitionMethod = {
 	"MvMBadgeCompletionReward": 17,
 	"MvMSquadSurplusReward": 18,
 	"HolidayGift": 19,
+	"CommunityMarketPurchase": 20,
 	"RecipeOutput": 21,
 	"QuestOutput": 23
 };
