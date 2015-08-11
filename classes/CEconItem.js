@@ -150,6 +150,23 @@ CEconItem.prototype.getBackpackPosition = function() {
 	return (this._inventory >>> 30) & 1 ? 0 : this._inventory & 0x0000FFFF;
 };
 
+CEconItem.prototype.getAcquisitionMethod = function() {
+	if (this.getBackpackPosition() > 0) {
+		throw new Error("Cannot get acquisition method for item placed in backpack.");
+	}
+
+	var method = this._inventory & 0x0000FFFF;
+
+	// Make sure this method is in our enum. If not, default to Found
+	for(var i in TeamFortress2.AcquisitionMethod) {
+		if(TeamFortress2.AcquisitionMethod.hasOwnProperty(i) && TeamFortress2.AcquisitionMethod[i] == method) {
+			return method;
+		}
+	}
+
+	return TeamFortress2.AcquisitionMethod.Found;
+};
+
 CEconItem.prototype.getAttribute = function(attribute) {
 	if(!this._tf2.itemSchema) {
 		return null;
