@@ -76,10 +76,10 @@ TeamFortress2.SortType = {
 };
 
 TeamFortress2.ItemFlags = {
-	CannotTrade: (1 << 0),
-	CannotCraft: (1 << 1),
-	NotEcon: (1 << 3),
-	Preview: (1 << 7)
+	"CannotTrade": (1 << 0),
+	"CannotCraft": (1 << 1),
+	"NotEcon": (1 << 3),
+	"Preview": (1 << 7)
 };
 
 TeamFortress2.ItemOrigin = {
@@ -131,4 +131,11 @@ TeamFortress2.AcquisitionMethod = {
 	"CommunityMarketPurchase": 20,
 	"RecipeOutput": 21,
 	"QuestOutput": 23
+};
+
+TeamFortress2.DynamicRecipeComponentFlags = {
+	"IsOutput": (1 << 0), // This recipe component is an output, not an input
+	"Unknown1": (1 << 2), // Unknown; this is set on one of my fabricators for all non-generic inputs
+	"Unknown2": (1 << 3), // Unknown; this is set on one of my fabricators for all inputs and outputs
+	"GenericItem": (1 << 4) // DefIndex not specified, match quality and attributes only
 };
