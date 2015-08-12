@@ -167,57 +167,6 @@ CEconItem.prototype.getAcquisitionMethod = function() {
 	return TeamFortress2.AcquisitionMethod.Dropped;
 };
 
-CEconItem.prototype.getName = function(ignoreCustomName, omitThe) {
-	if(this.customName && !ignoreCustomName) {
-		return '"' + this.customName + '"';
-	}
-
-	var name = this.details.item_name;
-	if(name.charAt(0) == '#') {
-		return name;
-	}
-
-	// "ItemNameFormat" "%s1%s6%s5%s2%s4%s3"
-	// Note that this isn't how the game does it, but it seems to work pretty well for me.
-	// Example: [Strange ][Professional Killstreak ][][Black Box ][Kit][ Series #5]
-	// %s1 = Strange rank prefix OR quality OR #TF_Unique_Prepend_Proper ("The ")
-	// %s2 = #ItemNameDynamicRecipeTargetNameFormat OR #ItemNameToolTargetNameFormat
-	// %s3 = Craft # (#ItemNameCraftNumberFormat) or Series # (#ItemNameCraftSeries)
-	// %s4 = The item's name
-	// %s5 = #ItemNameAustralium
-	// %s6 = #ItemNameKillStreakv0 OR #ItemNameKillStreakv1 OR #ItemNameKillStreakv2
-	var format = this._tf2.lang['ItemNameFormat'];
-
-	format = format.replace('%s4', name);
-
-	// Killstreak
-	var killstreak = this.getAttributeValue(2025);
-	if(killstreak !== null) {
-		format = format.replace('%s6', this._tf2.lang['ItemNameKillStreakv' + (killstreak - 1)]);
-	} else {
-		format = format.replace('%s6', '');
-	}
-
-	// Australium
-	if(this.getAttributeValue(2027)) {
-		format = format.replace('%s5', this._tf2.lang['ItemNameAustralium']);
-	} else {
-		format = format.replace('%s5', '');
-	}
-
-	// Check if it's a recipe output or kit
-	var recipeOutput = this.getRecipeOutput();
-	var targetItem = this.getTargetItem();
-	if(recipeOutput) {
-		format = format.replace('%s2', this._tf2.lang['ItemNameDynamicRecipeTargetNameFormat'].replace('%s1', recipeOutput.getName()));
-	} else if(targetItem) {
-		format = format.replace('%s2', this._tf2.lang['ItemNameToolTargetNameFormat'].replace('%s1', targetItem.getName()));
-	}
-
-	// Check quality
-	
-};
-
 CEconItem.prototype.getRecipeOutput = function(getTargetItem) {
 	// TODO: Check if it's a recipe item
 
