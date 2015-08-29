@@ -316,10 +316,6 @@ TeamFortress2.prototype.equipItem = function(item, classID, slot) {
 	this._send(Language.AdjustItemEquippedState, Protos.CMsgAdjustItemEquippedState, {"itemId": item.id || item, "newClass": classID, "newSlot": slot});
 };
 
-TeamFortress2.prototype.requestSpyVsEngiWarStats = function() {
-	this._send(Language.SpyVsEngyWar_RequestGlobalStats, Protos.CGCMsgGC_SpyVsEngyWar_RequestGlobalStats, {});
-};
-
 TeamFortress2.prototype._handlers = {};
 
 function coerceToLong(num, signed) {
