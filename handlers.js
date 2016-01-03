@@ -49,7 +49,10 @@ handlers[Language.UpdateItemSchema] = function(body) {
 	this.emit('itemSchema', proto.itemSchemaVersion.toString(16).toUpperCase(), proto.itemsGameUrl);
 	
 	var self = this;
-	request(proto.itemsGameUrl, function(err, response, body) {
+	request({
+		"uri": proto.itemsGameUrl,
+		"gzip": true
+	}, function(err, response, body) {
 		if(err) {
 			self.emit('debug', "Unable to download items_game.txt: " + err);
 			self.emit('itemSchemaError', err);
