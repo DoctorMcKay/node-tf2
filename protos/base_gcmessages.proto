@@ -133,7 +133,19 @@ message CSOEconGameAccountClient {
 	optional fixed32 trade_ban_expiration = 6;
 	optional fixed32 duel_ban_expiration = 7;
 	optional uint32 preview_item_def = 8 [default = 0];
-	optional uint32 prevent_match_until_date = 18;
+	optional bool phone_verified = 19 [default = false];
+	optional uint32 skill_rating_6v6 = 20;
+	optional uint32 skill_rating_9v9 = 21;
+	optional bool competitive_access = 23 [default = false];
+	optional uint32 matchmaking_ranked_ban_expiration = 18;
+	optional uint32 matchmaking_ranked_low_priority_expiration = 24;
+	optional uint32 matchmaking_ranked_ban_last_duration = 25;
+	optional uint32 matchmaking_ranked_low_priority_last_duration = 26;
+	optional uint32 matchmaking_casual_ban_expiration = 27;
+	optional uint32 matchmaking_casual_low_priority_expiration = 28;
+	optional uint32 matchmaking_casual_ban_last_duration = 29;
+	optional uint32 matchmaking_casual_low_priority_last_duration = 30;
+	optional bool phone_identifying = 31 [default = false];
 }
 
 message CSOItemCriteriaCondition {
@@ -206,6 +218,12 @@ message CMsgTrackUniquePlayerPairEvent {
 	optional uint64 victim_steam_id = 2;
 	optional uint64 item_id = 3;
 	optional uint32 event_type = 4;
+}
+
+message CMsgApplyStrangeCountTransfer {
+	optional uint64 tool_item_id = 1;
+	optional uint64 item_src_item_id = 2;
+	optional uint64 item_dest_item_id = 3;
 }
 
 message CMsgApplyStrangePart {
@@ -340,6 +358,9 @@ message CMsgItemAcknowledged {
 	optional uint32 quality = 4;
 	optional uint32 rarity = 5;
 	optional uint32 origin = 6;
+	optional uint32 is_strange = 7;
+	optional uint32 is_unusual = 8;
+	optional float wear = 9;
 }
 
 message CMsgSetPresetItemPosition {
@@ -529,7 +550,9 @@ message CMsgDeliverGiftResponseGiver {
 
 message CSOEconGameAccountForGameServers {
 	optional uint32 skill_rating = 3;
-	optional uint32 skill_rating_beta = 2;
+	optional uint32 skill_rating_6v6 = 2;
+	optional uint32 skill_rating_9v9 = 4;
+	optional uint32 skill_rating_12v12 = 5;
 }
 
 message CWorkshop_PopulateItemDescriptions_Request {

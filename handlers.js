@@ -297,7 +297,12 @@ handlers[Language.GameServer_ResetIdentityResponse] = function(body) {
 };
 
 // Spy vs. Engi War
-handlers[Language.SpyVsEngyWar_GlobalStatsResponse] = function(body) {
-	var proto = Protos.CGCMsgGC_SpyVsEngyWar_GlobalStatsResponse.decode(body);
-	this.emit('spyVsEngiWarStats', proto.spyScore, proto.engyScore);
+handlers[Language.War_GlobalStatsResponse] = function(body) {
+	var proto = Protos.CGCMsgGC_War_GlobalStatsResponse.decode(body);
+	var mySides = {}; // they are in orbit
+	(proto.sideScores || []).forEach(function(side) {
+		mySides[side.side] = side.score.toString();
+	});
+
+	this.emit('warStats', mySides);
 };

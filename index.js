@@ -251,8 +251,17 @@ TeamFortress2.prototype.equipItem = function(itemID, classID, slot) {
 	this._send(Language.AdjustItemEquippedState, Protos.CMsgAdjustItemEquippedState, {"itemId": itemID, "newClass": classID, "newSlot": slot});
 };
 
-TeamFortress2.prototype.requestSpyVsEngiWarStats = function() {
-	this._send(Language.SpyVsEngyWar_RequestGlobalStats, Protos.CGCMsgGC_SpyVsEngyWar_RequestGlobalStats, {});
+TeamFortress2.prototype.requestWarStats = function(warID, callback) {
+	if (typeof warID === 'function') {
+		callback = warID;
+		warID = null;
+	}
+
+	this._send(Language.War_RequestGlobalStats, Protos.CGCMsgGC_War_RequestGlobalStats, {"warId": warID || TeamFortress2.War.HeavyVsPyro});
+
+	if (callback) {
+		this.once('warStats', callback);
+	}
 };
 
 TeamFortress2.prototype._handlers = {};

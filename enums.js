@@ -74,3 +74,12 @@ TeamFortress2.ItemFlags = {
 	NotEcon: (1 << 3),
 	Preview: (1 << 7)
 };
+
+TeamFortress2.War = {
+	HeavyVsPyro: 0
+};
+
+TeamFortress2.HeavyVsPyroWarSide = {
+	Heavy: 0,
+	Pyro: 1
+};
