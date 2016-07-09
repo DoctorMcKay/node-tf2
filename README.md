@@ -146,9 +146,11 @@ Resets the token of the server identified by a given `id`. This will make the GC
 
 Opens a crate with `crateID` using a key with `keyID`. If successful, you'll get two `itemRemoved` events, one for the key and one for the crate, followed by an `itemAcquired` event for what you received.
 
-### requestSpyVsEngiWarStats()
+### requestWarStats([warID][, callback])
+- `warID` - A [war ID](https://github.com/DoctorMcKay/node-tf2/blob/3fa354b2c1224b5885d9b9eb2818d17f76454cd7/enums.js#L78-L80) (defaults to HeavyVsPyro)
+- `callback` - Identical to [`warStats`](#warstats) event
 
-Requests global stats for the Spy vs. Engi War. `spyVsEngiWarStats` will be emitted when the request is fulfilled.
+Requests global stats for a particular War.
 
 # Events
 
@@ -323,9 +325,8 @@ Emitted when the GC sends us back the response of a `getRegisteredServers()` cal
 
 Emitted when the GC sends us back the response of a `resetServerIdentity(id)` call.
 
-### spyVsEngiWarStats
+### warStats
 
-- `spyScore` - The score for the Spy team
-- `engiScore` - The score for the Engineer team
+- `scores` - An object where the keys are [side indexes](https://github.com/DoctorMcKay/node-tf2/blob/3fa354b2c1224b5885d9b9eb2818d17f76454cd7/enums.js#L82-L85) and values are scores.
 
-Emitted when the GC sends us back the response of a `requestSpyVsEngiWarStats()` call.
+Emitted when the GC sends us back the response of a `requestWarStats()` call.
