@@ -19,9 +19,9 @@
 		"url": "https://github.com/DoctorMcKay/node-tf2.git"
 	},
 	"dependencies": {
-		"bytebuffer": "^4.1.0",
+		"bytebuffer": "^5.0.1",
 		"protobufjs": "^6.8.8",
-		"request": "^2.83.0",
+		"request": "^2.88.0",
 		"steam": "^1.4.0",
 		"steamid": "^1.1.0",
 		"vdf": "^0.0.2"
