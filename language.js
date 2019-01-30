@@ -163,7 +163,7 @@ module.exports = {
 	GCToGCGrantSelfMadeItemToAccount: 2555,
 	GCToGCThankedByNewUser: 2556,
 	ShuffleCrateContents: 2557,
-	
+
 	// EGCBaseClientMsg
 	PingRequest: 3001,
 	PingResponse: 3002,
@@ -173,7 +173,7 @@ module.exports = {
 	ServerHello: 4007,
 	ClientGoodbye: 4008,
 	ServerGoodbye: 4009,
-	
+
 	// EGCBaseMsg
 	SystemMessage: 4001,
 	ReplicateConVars: 4002,
@@ -189,7 +189,7 @@ module.exports = {
 	Error: 4509,
 	Replay_UploadedToYouTube: 4510,
 	LANServerAvailable: 4511,
-	
+
 	// ETFGCMsg
 	ReportWarKill: 5001,
 	VoteKickBanPlayer: 5018,

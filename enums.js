@@ -1,4 +1,4 @@
-var TeamFortress2 = require('./index.js');
+const TeamFortress2 = require('./index.js');
 
 TeamFortress2.GCGoodbyeReason = {
 	GC_GOING_DOWN: 1,
