@@ -1,105 +1,100 @@
 const ByteBuffer = require('bytebuffer');
-const Steam = require('steam');
+const EventEmitter = require('events').EventEmitter;
 const SteamID = require('steamid');
+const Util = require('util');
 const VDF = require('vdf');
 
 const Language = require('./language.js');
 const Schema = require('./protobufs/generated/_load.js');
 
+const STEAM_APPID = 440;
+
 module.exports = TeamFortress2;
 
-require('util').inherits(TeamFortress2, require('events').EventEmitter);
+Util.inherits(TeamFortress2, EventEmitter);
 
 function TeamFortress2(steam) {
-	this._steam = steam.client || steam._client; // SteamClient is _client in the official SteamUser and client in node-steam-user
-	this._gc = new Steam.SteamGameCoordinator(this._steam, 440);
+	if (steam.packageName != 'steam-user' || !steam.packageVersion || !steam.constructor) {
+		throw new Error('tf2 v3 only supports steam-user v4.2.0 or later.');
+	} else {
+		let parts = steam.packageVersion.split('.');
+		if (parts[0] < 4 || parts[1] < 2) {
+			throw new Error(`node-tf2 v3 only supports node-steam-user v4.2.0 or later. ${steam.constructor.name} v${steam.packageVersion} given.`);
+		}
+	}
+
+	this._steam = steam;
 	this.haveGCSession = false;
-	this._hadGCSession = false;
 	this._isInTF2 = false;
 
-	let self = this;
-
-	this._gc.on('message', function(header, body, callback) {
-		let protobuf = !!header.proto;
-		let handled = false;
-
-		if (self._handlers[header.msg]) {
-			handled = true;
-			self._handlers[header.msg].call(self, protobuf ? body : ByteBuffer.wrap(body, ByteBuffer.LITTLE_ENDIAN));
+	this._steam.on('receivedFromGC', (appid, msgType, payload) => {
+		if (appid != STEAM_APPID) {
+			return; // we don't care
 		}
 
-		let msgName = header.msg;
+		let isProtobuf = !Buffer.isBuffer(payload);
+		let handler = null;
+
+		if (this._handlers[msgType]) {
+			handler = this._handlers[msgType];
+		}
+
+		let msgName = msgType;
 		for (let i in Language) {
-			if (Language.hasOwnProperty(i) && Language[i] == header.msg) {
+			if (Language.hasOwnProperty(i) && Language[i] == msgType) {
 				msgName = i;
 				break;
 			}
 		}
 
-		self.emit('debug', "Got " + (handled ? "handled" : "unhandled") + " GC message " + msgName + (protobuf ? " (protobuf)" : ""));
+		this.emit('debug', "Got " + (handler ? "handled" : "unhandled") + " GC message " + msgName + (isProtobuf ? " (protobuf)" : ""));
+		if (handler) {
+			handler.call(this, isProtobuf ? payload : ByteBuffer.wrap(payload, ByteBuffer.LITTLE_ENDIAN));
+		}
 	});
 
-	// "extend" the default steam.gamesPlayed function so we can catch when TF2 starts up
-	let gamesPlayed = steam.gamesPlayed;
-	steam.gamesPlayed = function(input) {
-		let appids = input;
-
-		if (appids.games_played) {
-			appids = appids.games_played;
+	this._steam.on('appLaunched', (appid) => {
+		if (this._isInTF2) {
+			return; // we don't care if it was launched again
 		}
 
-		if (!(appids instanceof Array)) {
-			appids = [appids];
-		}
-
-		self._isInTF2 = false;
-		for (let i = 0; i < appids.length; i++) {
-			if (appids[i] == 440 || appids[i].game_id == 440) {
-				self._isInTF2 = true;
-				break;
+		if (appid == STEAM_APPID) {
+			this._isInTF2 = true;
+			if (!this.haveGCSession) {
+				this._connect();
 			}
 		}
+	});
 
-		if (self._isInTF2) {
-			if (!self.haveGCSession) {
-				self._connect();
-			}
-		} else {
-			if (self._helloInterval) {
-				clearInterval(self._helloInterval);
-				self._helloInterval = null;
-			}
-
-			self.haveGCSession = false;
-			self._hadGCSession = false;
+	let handleAppQuit = (emitDisconnectEvent) => {
+		if (this._helloInterval) {
+			clearInterval(this._helloInterval);
+			this._helloInterval = null;
 		}
 
-		gamesPlayed.call(steam, appids);
+		if (this.haveGCSession && emitDisconnectEvent) {
+			this.emit('disconnectedFromGC', TeamFortress2.GCGoodbyeReason.NO_SESSION);
+		}
+
+		this.haveGCSession = false;
 	};
 
-	this._steam.on('loggedOff', function() {
-		self._isInTF2 = false;
-		self._hadGCSession = self.haveGCSession;
-		if (self.haveGCSession) {
-			self.emit('disconnectedFromGC', TeamFortress2.GCGoodbyeReason.NO_SESSION);
-			self.haveGCSession = false;
+	this._steam.on('appQuit', (appid) => {
+		if (!this._isInTF2) {
+			return;
+		}
+
+		if (appid == STEAM_APPID) {
+			handleAppQuit(false);
 		}
 	});
 
-	this._steam.on('error', function(e) {
-		self._isInTF2 = false;
-		self._hadGCSession = false;
-		if (self.haveGCSession) {
-			self.emit('disconnectedFromGC', TeamFortress2.GCGoodbyeReason.NO_SESSION);
-			self.haveGCSession = false;
-		}
+	this._steam.on('disconnected', () => {
+		handleAppQuit(true);
 	});
 
-	this._steam.on('logOnResponse', function(response) {
-		if (response.eresult == Steam.EResult.OK && self._hadGCSession) {
-			self._connect();
-			self._hadGCSession = false;
-		}
+	this._steam.on('error', (err) => {
+		handleAppQuit(true);
 	});
 }
 
@@ -108,33 +103,31 @@ TeamFortress2.prototype._connect = function() {
 		return; // We're not in TF2 or we're already trying to connect
 	}
 
-	let self = this;
-
-	function sendHello() {
-		if (self.haveGCSession) {
-			clearInterval(self._helloInterval);
-			self._helloInterval = null;
+	let sendHello = () => {
+		if (this.haveGCSession) {
+			clearInterval(this._helloInterval);
+			this._helloInterval = null;
 			return;
 		}
 
-		if (self._isServer()) {
-			self._send(Language.ServerHello, Schema.CMsgServerHello, {});
+		if (this._isServer()) {
+			this._send(Language.ServerHello, Schema.CMsgServerHello, {});
 		} else {
-			self._send(Language.ClientHello, Schema.CMsgClientHello, {});
+			this._send(Language.ClientHello, Schema.CMsgClientHello, {});
 		}
-	}
+	};
 
 	this._helloInterval = setInterval(sendHello, 5000);
 	sendHello();
 };
 
 TeamFortress2.prototype._isServer = function() {
-	let sid = new SteamID(this._steam.steamID);
-	return (sid.type == SteamID.Type.ANON_GAMESERVER || sid.type == SteamID.Type.GAMESERVER);
+	let serverTypes = [SteamID.Type.ANON_GAMESERVER, SteamID.Type.GAMESERVER];
+	return this._steam.steamID && serverTypes.includes(this._steam.steamID.type);
 };
 
 TeamFortress2.prototype._send = function(type, protobuf, body) {
-	if (!this._steam.loggedOn) {
+	if (!this._steam.steamID) {
 		return false;
 	}
 
@@ -149,10 +142,10 @@ TeamFortress2.prototype._send = function(type, protobuf, body) {
 	this.emit('debug', "Sending GC message " + msgName);
 
 	if (protobuf) {
-		this._gc.send({"msg": type, "proto": {}}, protobuf.encode(body).finish());
+		this._steam.sendToGC(STEAM_APPID, type, {}, protobuf.encode(body).finish());
 	} else {
 		// This is a ByteBuffer
-		this._gc.send({"msg": type}, body.flip().toBuffer());
+		this._steam.sendToGC(STEAM_APPID, type, null, body.flip().toBuffer());
 	}
 
 	return true;
@@ -249,15 +242,19 @@ TeamFortress2.prototype.sortBackpack = function(sortType) {
 };
 
 TeamFortress2.prototype.sendProfessorSpeks = function(steamID) {
-	this._send(Language.FreeTrial_ChooseMostHelpfulFriend, Schema.CMsgTFFreeTrialChooseMostHelpfulFriend, {"account_id_friend": new SteamID(steamID).accountid});
+	if (typeof steamID == 'string') {
+		steamID = new SteamID(steamID);
+	}
+
+	this._send(Language.FreeTrial_ChooseMostHelpfulFriend, Schema.CMsgTFFreeTrialChooseMostHelpfulFriend, {"account_id_friend": steamID.accountid});
 };
 
 TeamFortress2.prototype.createServerIdentity = function() {
-	this._send(Language.GameServer_CreateIdentity, Schema.CMsgGC_GameServer_CreateIdentity, {"account_id": new SteamID(this._steam.steamID).accountid});
+	this._send(Language.GameServer_CreateIdentity, Schema.CMsgGC_GameServer_CreateIdentity, {"account_id": this._steam.steamID.accountid});
 };
 
 TeamFortress2.prototype.getRegisteredServers = function() {
-	this._send(Language.GameServer_List, Schema.CMsgGC_GameServer_List, {"account_id": new SteamID(this._steam.steamID).accountid});
+	this._send(Language.GameServer_List, Schema.CMsgGC_GameServer_List, {"account_id": this._steam.steamID.accountid});
 };
 
 TeamFortress2.prototype.resetServerIdentity = function(id) {
