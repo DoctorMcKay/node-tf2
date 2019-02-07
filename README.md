@@ -5,9 +5,10 @@
 [![license](https://img.shields.io/npm/l/tf2.svg)](https://github.com/DoctorMcKay/node-tf2/blob/master/LICENSE)
 [![paypal](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=N36YVAT42CZ4G&item_name=node%2dtf2&currency_code=USD)
 
-This module provides a very flexible interface for interacting with the [Team Fortress 2](http://store.steampowered.com) Game Coordinator. It's designed to work with a [node-steam SteamUser](https://github.com/seishun/node-steam/tree/master/lib/handlers/user) or [node-steam-user SteamUser](https://github.com/DoctorMcKay/node-steam-user) instance.
+This module provides a very flexible interface for interacting with the [Team Fortress 2](http://store.steampowered.com)
+Game Coordinator. It's designed to work with a [node-steam-user SteamUser](https://github.com/DoctorMcKay/node-steam-user) instance.
 
-**Use 1.1.5 with node-steam 0.6.x, and 2.0.0 or greater with node-steam 1.0.0 or greater.**
+**You will need node-steam-user v4.2.0 or later and Node.js v8 or later to use node-tf2 v3.**
 
 # Setup
 
@@ -18,37 +19,21 @@ First, install it from npm:
 Require the module and call its constructor with your SteamUser instance:
 
 ```js
-var Steam = require('steam');
-var TeamFortress2 = require('tf2');
+const SteamUser = require('steam-user');
+const TeamFortress2 = require('tf2');
 
-var client = new Steam.SteamClient();
-var user = new Steam.SteamUser(client);
-var tf2 = new TeamFortress2(user);
-```
-
-or
-
-```js
-var SteamUser = require('steam-user');
-var TeamFortress2 = require('tf2');
-
-var user = new SteamUser();
-var tf2 = new TeamFortress2(user);
+let user = new SteamUser();
+let tf2 = new TeamFortress2(user);
 ```
 
 To initialize your GC connection, just launch TF2 via SteamUser normally:
 
 ```js
-user.gamesPlayed({"games_played": [{"game_id": 440}]});
-```
-
-or
-
-```js
 user.gamesPlayed([440]);
 ```
 
-node-tf2 will emit a `connectedToGC` event when the game coordinator connection has been successfully established. You shouldn't try to do anything before you receive that event.
+node-tf2 will emit a `connectedToGC` event when the game coordinator connection has been successfully established.
+You shouldn't try to do anything before you receive that event.
 
 # Enums
 
@@ -86,10 +71,10 @@ The maximum number of items your backpack can hold. This value is defined right 
 
 ### Constructor(steamClient)
 
-When instantiating your node-tf2 instance, you need to pass your active Steam.SteamClient instance as the sole parameter, as shown here:
+When instantiating your node-tf2 instance, you need to pass your active SteamUser instance as the sole parameter, as shown here:
 
 ```js
-var tf2 = new TeamFortress2(steamClient);
+let tf2 = new TeamFortress2(steamUser);
 ```
 
 ### setLang(localizationFile)
@@ -177,19 +162,16 @@ Requests global stats for a particular War.
 # Events
 
 ### connectedToGC
-
 - `version` - The current version reported by the GC
 
 Emitted when a GC connection is established. You shouldn't use any methods before you receive this. Note that this may be received (after it's first emitted) without any disconnectedFromGC event being emitted. In this case, the GC simply restarted.
 
 ### disconnectedFromGC
-
 - `reason` - The reason why we disconnected from the GC. This value is one of the values in the `GCGoodbyeReason` enum. If the value is unknown, you'll get a string representation instead.
 
 Emitted when we disconnect from the GC. You shouldn't use any methods until `connectedToGC` is emitted.
 
 ### itemSchema
-
 - `version` - The current version of the schema as a hexadecimal string
 - `itemsGameUrl` - The URL to the current items_game.txt
 
@@ -200,21 +182,18 @@ Emitted when we get an updated item schema from the GC. node-tf2 will automatica
 Emitted when the up-to-date items_game.txt has been downloaded and parsed. It's available as `tf2.itemSchema`.
 
 ### itemSchemaError
-
 - `err` - The error that occurred
 
 Emitted if there was an error when downloading items_game.txt.
 
 ### systemMessage
-
 - `message` - The message that was broadcast
 
 Emitted when a system message is sent by Valve. In the official client, this is displayed as a regular pop-up notification box and in chat, and is accompanied by a beeping sound.
 
-System messages are broadcast rarely and usually concern item server downtime.
+System messages are broadcast rarely and usually concern item server (GC) downtime.
 
 ### displayNotification
-
 - `title` - Notification title (currently unused)
 - `body` - Notification body text
 
@@ -225,7 +204,6 @@ Notifications have a valid and non-empty `title`, but the official client doesn'
 **This won't be emitted unless you call `setLang` with a valid localization file.**
 
 ### itemBroadcast
-
 - `message` - The message text that is rendered by clients. This will be `null` if you haven't called `setLang` with a valid localization file or if the schema isn't loaded.
 - `username` - The name of the user that received/deleted an item
 - `wasDestruction` - `true` if the user deleted their item, `false` if they received it
@@ -234,14 +212,12 @@ Notifications have a valid and non-empty `title`, but the official client doesn'
 Emitted when an item broadcast notification is sent. In the official client, the `message` is displayed as a regular pop-up notification box. Currently, this is only used for broadcasting Golden Frying Pan drops/deletions.
 
 ### tradeRequest
-
-- `steamID` - The 64-bit SteamID of the request's sender
+- `steamID` - A [`SteamID`](https://www.npmjs.com/package/steamid) object of the user who sent a trade request
 - `tradeID` - A unique numeric identifier that's used to respond to the request (via `respondToTrade`)
 
 Emitted when someone sends us a trade request. Use `respondToTrade` to accept or decline it.
 
 ### tradeResponse
-
 - `response` - The response code. This is a value in the `TradeResponse` enum.
 - `tradeID` - If `response` is `TradeResponse.Cancel`, this is the tradeID of the trade request that was canceled.
 
@@ -263,7 +239,7 @@ Emitted when the GC notifies us that something about our account has changed. On
 
 For example, if our account has just upgraded to premium, this would be `oldData`:
 
-```js
+```json
 {
 	"premium": false,
 	"backpackSlots": 50
@@ -273,34 +249,29 @@ For example, if our account has just upgraded to premium, this would be `oldData
 The `premium` property of node-tf2 would now be true and the `backpackSlots` property would now be 300.
 
 ### itemAcquired
-
 - `item` - The item that was acquired
 
 Emitted when we receive a new item. `item` is the item that we just received, and `tf2.backpack` is updated before the event is emitted.
 
 ### itemChanged
-
 - `oldItem` - The old item data
 - `newItem` - The new item data
 
 Emitted when an item in our backpack changes (e.g. style update, position changed, etc.).
 
 ### itemRemoved
-
 - `item` - The item that was removed
 
 Emitted when an item is removed from our backpack. The `tf2.backpack` property is updated before this is emitted.
 
 ### craftingComplete
-
 - `recipe` - The ID of the recipe that was used to perform this craft, or -1 on failure
 - `itemsGained` - An array of IDs of items that were gained as a result of this craft
 
 Emitted when a craft initiated by the `craft` method finishes.
 
 ### professorSpeksReceived
-
-- `steamID` - The 64-bit Steam ID of the user who sent us Professor Speks
+- `steamID` - A [`SteamID`](https://www.npmjs.com/package/steamid) object of the user who sent us Professor Speks
 
 Emitted when someone else thanks us and sends us Professor Speks (increments our "New Users Helped" counter if we already have them).
 
@@ -309,7 +280,6 @@ Emitted when someone else thanks us and sends us Professor Speks (increments our
 Emitted when we successfully send Professor Speks to someone else.
 
 ### createIdentity
-
 - `status` - The status of this request, from the values in the enum below.
 - `created` - `true` if the identity was successfully created
 - `id` - The ID of the newly-created identity
@@ -325,22 +295,20 @@ Emitted when the GC sends us back the response of a `createServerIdentity()` cal
 	}
 
 ### registeredServers
-
 - `servers` - An array of objects representing our owned server identities
 
 Emitted when the GC sends us back the response of a `getRegisteredServers()` call. Each item in the `servers` array will be an object that looks like this:
 
-```js
+```json
 {
-	"gameServerAccountId": 291516,
-	"gameServerIdentityToken": "T0aK9zQ6W<)FTzt",
-	"gameServerStanding": 0,
-	"gameServerStandingTrend": 2
+	"game_server_account_id": 291516,
+	"game_server_identity_token": "T0aK9zQ6W<)FTzt",
+	"game_server_standing": 0,
+	"game_server_standing_trend": 2
 }
 ```
 
 ### resetIdentity
-
 - `reset` - `true` if the token was successfully reset
 - `id` - The ID of the identity for which we reset the token
 - `token` - The new token associated with the given ID
@@ -348,7 +316,6 @@ Emitted when the GC sends us back the response of a `getRegisteredServers()` cal
 Emitted when the GC sends us back the response of a `resetServerIdentity(id)` call.
 
 ### warStats
-
 - `scores` - An object where the keys are [side indexes](https://github.com/DoctorMcKay/node-tf2/blob/3fa354b2c1224b5885d9b9eb2818d17f76454cd7/enums.js#L82-L85) and values are scores.
 
 Emitted when the GC sends us back the response of a `requestWarStats()` call.
