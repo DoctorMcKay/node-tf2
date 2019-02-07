@@ -114,7 +114,7 @@ handlers[Language.TFSpecificItemBroadcast] = function(body) {
 // Trading
 handlers[Language.Trading_InitiateTradeRequest] = function(body) {
 	let tradeID = body.readUint32();
-	let steamID = body.readUint64().toString();
+	let steamID = new SteamID(body.readUint64().toString());
 	this.emit('tradeRequest', steamID, tradeID);
 };
 
@@ -286,7 +286,7 @@ handlers[Language.CraftResponse] = function(body) {
 // Professor Speks
 handlers[Language.FreeTrial_ThankedBySomeone] = function(body) {
 	let proto = decodeProto(Schema.CMsgTFThankedBySomeone, body);
-	this.emit('professorSpeksReceived', proto.thanker_steam_id);
+	this.emit('professorSpeksReceived', new SteamID(proto.thanker_steam_id));
 };
 
 handlers[Language.FreeTrial_ThankedSomeone] = function(body) {
