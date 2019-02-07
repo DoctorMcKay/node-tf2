@@ -1,5 +1,6 @@
-const VDF = require('vdf');
+const ByteBuffer = require('bytebuffer');
 const Request = require('request');
+const VDF = require('vdf');
 
 const TeamFortress2 = require('./index.js');
 const Language = require('./language.js');
@@ -127,7 +128,7 @@ handlers[Language.Trading_InitiateTradeResponse] = function(body) {
 // SO
 handlers[Language.SO_CacheSubscriptionCheck] = function(body) {
 	this.emit('debug', "Requesting SO cache subscription refresh");
-	this._send(Language.SO_CacheSubscriptionRefresh, Schema.CMsgSOCacheSubscriptionRefresh, {"owner": this._steam.steamID});
+	this._send(Language.SO_CacheSubscriptionRefresh, Schema.CMsgSOCacheSubscriptionRefresh, {"owner": this._steam.steamID.getSteamID64()});
 };
 
 handlers[Language.SO_CacheSubscribed] = function(body) {
