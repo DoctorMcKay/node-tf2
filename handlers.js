@@ -301,12 +301,7 @@ handlers[Language.GameServer_CreateIdentityResponse] = function(body) {
 
 handlers[Language.GameServer_ListResponse] = function(body) {
 	let proto = decodeProto(Schema.CMsgGC_GameServer_ListResponse, body);
-	this.emit('registeredServers', (proto.owned_game_servers || []).map(server => ({
-		"gameServerAccountId": server.game_server_account_id,
-		"gameServerIdentityToken": server.game_server_identity_token,
-		"gameServerStanding": server.game_server_standing,
-		"gameServerStandingTrend": server.game_server_standing_trend
-	})));
+	this.emit('registeredServers', proto.owned_game_servers || []);
 };
 
 handlers[Language.GameServer_ResetIdentityResponse] = function(body) {
