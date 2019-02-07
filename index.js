@@ -171,9 +171,13 @@ TeamFortress2.prototype.craft = function(items, recipe) {
 };
 
 TeamFortress2.prototype.trade = function(steamID) {
+	if (typeof steamID == 'string') {
+		steamID = new SteamID(steamID);
+	}
+
 	let buffer = new ByteBuffer(12, ByteBuffer.LITTLE_ENDIAN);
 	buffer.writeUint32(0);
-	buffer.writeUint64(coerceToLong(steamID));
+	buffer.writeUint64(coerceToLong(steamID.getSteamID64()));
 	this._send(Language.Trading_InitiateTradeRequest, null, buffer);
 };
 
@@ -221,9 +225,13 @@ TeamFortress2.prototype.wrapItem = function(wrapID, itemID) {
 };
 
 TeamFortress2.prototype.deliverGift = function(gift, steamID) {
+	if (typeof steamID == 'string') {
+		steamID = new SteamID(steamID);
+	}
+
 	let buffer = new ByteBuffer(16, ByteBuffer.LITTLE_ENDIAN);
 	buffer.writeUint64(coerceToLong(gift));
-	buffer.writeUint64(coerceToLong(steamID));
+	buffer.writeUint64(coerceToLong(steamID.getSteamID64()));
 	this._send(Language.DeliverGift, null, buffer);
 };
 
