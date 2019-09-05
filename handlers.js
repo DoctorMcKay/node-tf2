@@ -1,5 +1,6 @@
 const ByteBuffer = require('bytebuffer');
 const Request = require('request');
+const SteamID = require('steamid');
 const VDF = require('vdf');
 
 const TeamFortress2 = require('./index.js');
