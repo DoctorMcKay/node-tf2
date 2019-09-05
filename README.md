@@ -89,7 +89,10 @@ Craft `items` together into a new item, optionally using a specific `recipe`. Th
 
 ### trade(steamID)
 
-Sends an in-game trade request to `steamID`. The other player must be playing TF2 currently. Listen for the `tradeResponse` event for their response. If they accept, node-steam will emit `sessionStart` and you can start the trade with [node-steam-trade](https://github.com/seishun/node-steam-trade).
+Sends an in-game trade request to `steamID`. The other player must be playing TF2 currently. Listen for the `tradeResponse`
+event for their response. If they accept, node-steam-user will emit
+[`tradeRequest`](https://github.com/DoctorMcKay/node-steam-user#traderequest) and you can start the trade with
+[node-steam-trade](https://github.com/seishun/node-steam-trade).
 
 ### cancelTradeRequest()
 
