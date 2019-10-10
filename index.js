@@ -76,6 +76,7 @@ function TeamFortress2(steam) {
 			this.emit('disconnectedFromGC', TeamFortress2.GCGoodbyeReason.NO_SESSION);
 		}
 
+		this._isInTF2 = false;
 		this.haveGCSession = false;
 	};
 
