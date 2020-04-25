@@ -181,6 +181,12 @@ TeamFortress2.prototype.trade = function(steamID) {
 	this._send(Language.Trading_InitiateTradeRequest, null, buffer);
 };
 
+TeamFortress2.prototype.removeMakersMark = function(itemID){
+	this._send(Language.RemoveMakersMark, Schema.CMsgGCRemoveCustomizationAttributeSimple , {
+		"item_id": itemID
+	})
+}
+
 TeamFortress2.prototype.cancelTradeRequest = function() {
 	let buffer = new ByteBuffer(0, ByteBuffer.LITTLE_ENDIAN);
 	this._send(Language.Trading_CancelSession, null, buffer);

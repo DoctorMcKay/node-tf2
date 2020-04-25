@@ -132,7 +132,12 @@ Generically use an item. The `item` parameter should be an item ID.
 
 ### sortBackpack(sortType)
 
-Sorts your backpack. `sortType` is the ID of the type of sort you want. I don't know which sort type is which code, so you'll have to figure that out for yourself.
+Sorts your backpack. `sortType` is the ID of the type of sort you want. 
+0: No sort, 1: By rarity, 2: By type, 3: By class, 4: By slot, 5: By date
+
+### removeMakersMark(itemID)
+
+Removes the crafter's name.
 
 ### sendProfessorSpeks(steamID)
 
