@@ -87,6 +87,38 @@ You can call this at any time, even when disconnected. If you get an updated loc
 
 Craft `items` together into a new item, optionally using a specific `recipe`. The `recipe` parameter is optional and you don't normally need to specify it. `items` should be an array of item IDs to craft.
 
+### removeItemPaint(item)
+
+Removes item paint. `item` should be item's id
+
+
+### removeCustomTexture(item)
+
+Removes custom texture (war paints?). `item` should be item's id
+
+### removeMakersMark(item)
+
+Removes the crafter's name. `item` should be item's id
+
+### removeItemKillstreak(item)
+
+Removes the killstreaks from item. `item` should be item's id
+
+### removeItemGiftedBy(item)
+
+Removes the `Gifted by` attribute from item. `item` should be item's id
+
+### removeItemFestivizer(item)
+
+Removes the festivizer from item. `item` should be item's id
+
+
+### requestInventoryRefresh()
+
+Refresh TF2 inventory without leaving and entering game
+
+**This hasnt been tested yet**
+
 ### trade(steamID)
 
 Sends an in-game trade request to `steamID`. The other player must be playing TF2 currently. Listen for the `tradeResponse`
@@ -134,11 +166,7 @@ Generically use an item. The `item` parameter should be an item ID.
 
 Sorts your backpack. `sortType` is the ID of the type of sort you want.
 
-0: No sort, 1: By rarity, 2: By type, 3: By class, 4: By slot, 5: By date
-
-### removeMakersMark(itemID)
-
-Removes the crafter's name.
+`0`: No sort, `1`: By rarity, `2`: By type, `3`: By class, `4`: By slot, `5`: By date
 
 ### sendProfessorSpeks(steamID)
 
