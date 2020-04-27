@@ -181,11 +181,61 @@ TeamFortress2.prototype.trade = function(steamID) {
 	this._send(Language.Trading_InitiateTradeRequest, null, buffer);
 };
 
-TeamFortress2.prototype.removeMakersMark = function(itemID){
+TeamFortress2.prototype.removeItemName = function(item){
+	//bool takes 1,item takes 8
+	let buffer = new ByteBuffer(9, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(item);
+	buffer.writeUint8(0); //set to false
+	this._send(Language.RemoveItemName, null, buffer);
+};
+
+TeamFortress2.prototype.removeItemDescription = function(item){
+	//bool takes 1,item takes 8
+	let buffer = new ByteBuffer(9, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(item);
+	buffer.writeUint8(0); //set to true for description
+	this._send(Language.RemoveItemName, null, buffer);
+};
+
+TeamFortress2.prototype.removeItemPaint = function(item){
+	this._send(Language.RemoveItemPaint, Schema.CMsgGCRemoveCustomizationAttributeSimple , {
+		"item_id": item
+	});
+};
+
+TeamFortress2.prototype.removeCustomTexture = function(item){
+	this._send(Language.RemoveCustomTexture, Schema.CMsgGCRemoveCustomizationAttributeSimple , {
+		"item_id": item
+	});
+};
+
+TeamFortress2.prototype.removeMakersMark = function(item){
 	this._send(Language.RemoveMakersMark, Schema.CMsgGCRemoveCustomizationAttributeSimple , {
-		"item_id": itemID
-	})
-}
+		"item_id": item
+	});
+};
+
+TeamFortress2.prototype.removeItemKillstreak = function(item){
+	this._send(Language.RemoveKillstreak, Schema.CMsgGCRemoveCustomizationAttributeSimple , {
+		"item_id": item
+	});
+};
+
+TeamFortress2.prototype.removeItemGiftedBy = function(item){
+	this._send(Language.RemoveItemGiftedBy, Schema.CMsgGCRemoveCustomizationAttributeSimple , {
+		"item_id": item
+	});
+};
+
+TeamFortress2.prototype.removeItemFestivizer = function(item){
+	this._send(Language.RemoveItemFestivizer, Schema.CMsgGCRemoveCustomizationAttributeSimple , {
+		"item_id": item
+	});
+};
+
+TeamFortress2.prototype.requestInventoryRefresh = function(){
+	this._send(Language.RequestInventoryRefresh, Schema.CMsgRequestInventoryRefresh, {});
+};
 
 TeamFortress2.prototype.cancelTradeRequest = function() {
 	let buffer = new ByteBuffer(0, ByteBuffer.LITTLE_ENDIAN);

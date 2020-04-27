@@ -163,6 +163,8 @@ module.exports = {
 	GCToGCGrantSelfMadeItemToAccount: 2555,
 	GCToGCThankedByNewUser: 2556,
 	ShuffleCrateContents: 2557,
+	RemoveItemGiftedBy: 2570,
+	RemoveItemFestivizer: 2572,
 
 	// EGCBaseClientMsg
 	PingRequest: 3001,
