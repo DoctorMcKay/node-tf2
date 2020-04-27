@@ -117,8 +117,6 @@ Removes the festivizer from item. `item` should be item's id
 
 Refresh TF2 inventory without leaving and entering game
 
-**This hasnt been tested yet**
-
 ### trade(steamID)
 
 Sends an in-game trade request to `steamID`. The other player must be playing TF2 currently. Listen for the `tradeResponse`
