@@ -246,6 +246,13 @@ TeamFortress2.prototype.useItem = function(item) {
 	this._send(Language.UseItemRequest, Schema.CMsgUseItem, {"item_id": item});
 };
 
+TeamFortress2.prototype.applyStrangifier = function (item, strangifier) {
+    this._send(Language.ApplyXifier, Schema.CMsgGCCollectItem, {
+        "collection_item_id": strangifier,
+        "subject_item_id": item
+    });
+}
+
 TeamFortress2.prototype.sortBackpack = function(sortType) {
 	this._send(Language.SortItems, Schema.CMsgSortItems, {"sort_type": sortType});
 };
