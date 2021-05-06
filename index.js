@@ -246,12 +246,29 @@ TeamFortress2.prototype.useItem = function(item) {
 	this._send(Language.UseItemRequest, Schema.CMsgUseItem, {"item_id": item});
 };
 
+TeamFortress2.prototype.tradeUP = function (items) {
+    this._send(Language.CraftCollectionUpgrade, Schema.CMsgCraftCollectionUpgrade, {
+        "item_id": items
+    });
+};
+
+TeamFortress2.prototype.removeItemAttribute = function (item, attribute) {
+    this._send(attribute, Schema.CMsgGCRemoveCustomizationAttributeSimple, { "item_id": item });
+};
+
+TeamFortress2.prototype.applyStrangePart = function (item, part) {
+    this._send(Language.ApplyStrangePart, Schema.CMsgApplyStrangePart, {
+        "strange_part_item_id": part,
+        "item_item_id": item
+    });
+};
+
 TeamFortress2.prototype.applyStrangifier = function (item, strangifier) {
     this._send(Language.ApplyXifier, Schema.CMsgGCCollectItem, {
         "collection_item_id": strangifier,
         "subject_item_id": item
     });
-}
+};
 
 TeamFortress2.prototype.sortBackpack = function(sortType) {
 	this._send(Language.SortItems, Schema.CMsgSortItems, {"sort_type": sortType});

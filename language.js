@@ -162,7 +162,10 @@ module.exports = {
 	GCToGCGetUserServerMembersResponse: 2544,
 	GCToGCGrantSelfMadeItemToAccount: 2555,
 	GCToGCThankedByNewUser: 2556,
-	ShuffleCrateContents: 2557,
+    ShuffleCrateContents: 2557,
+    CraftCollectionUpgrade: 2567,
+    RemoveItemGiftedBy: 2570,
+    RemoveItemFestivizer: 2572,
 
 	// EGCBaseClientMsg
 	PingRequest: 3001,
