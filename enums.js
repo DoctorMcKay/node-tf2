@@ -83,3 +83,12 @@ TeamFortress2.HeavyVsPyroWarSide = {
 	Heavy: 0,
 	Pyro: 1
 };
+
+TeamFortress2.Attributes = {
+    Paint: 1031,
+    CustomTexture: 1051,
+    MakersMark: 1053,
+    Killstreak: 1094,
+    GiftedBy: 2570,
+    Festivizer: 2572
+}
