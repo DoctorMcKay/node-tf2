@@ -18,7 +18,7 @@ function TeamFortress2(steam) {
 		throw new Error('tf2 v3 only supports steam-user v4.2.0 or later.');
 	} else {
 		let parts = steam.packageVersion.split('.');
-		if (parts[0] < 4 || parts[1] < 2) {
+		if (parts[0] < 4 && parts[1] < 2) {
 			throw new Error(`node-tf2 v3 only supports node-steam-user v4.2.0 or later. ${steam.constructor.name} v${steam.packageVersion} given.`);
 		}
 	}
