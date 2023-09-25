@@ -1,6 +1,6 @@
 {
 	"name": "tf2",
-	"version": "3.0.2",
+	"version": "3.0.3",
 	"description": "Exposes a simple API for interacting with the Team Fortress 2 game coordinator",
 	"keywords": [
 		"tf2",
