@@ -7,7 +7,8 @@
 This module provides a very flexible interface for interacting with the [Team Fortress 2](http://store.steampowered.com)
 Game Coordinator. It's designed to work with a [node-steam-user SteamUser](https://github.com/DoctorMcKay/node-steam-user) instance.
 
-**You will need node-steam-user v4.2.0 or later and Node.js v8 or later to use node-tf2 v3.**
+**You will need steam-user v4.2.0 or later and Node.js v14 or later to use tf2 v4.**  
+You will need steam-user v4.2.0 or later and Node.js v8 or later to use tf2 v3.
 
 # Setup
 
