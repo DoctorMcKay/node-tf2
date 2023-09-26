@@ -2,7 +2,7 @@ const ByteBuffer = require('bytebuffer');
 const EventEmitter = require('events').EventEmitter;
 const SteamID = require('steamid');
 const Util = require('util');
-const VDF = require('vdf');
+const VDF = require('kvparser');
 
 const Language = require('./language.js');
 const Schema = require('./protobufs/generated/_load.js');

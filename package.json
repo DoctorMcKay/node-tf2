@@ -19,11 +19,11 @@
 		"url": "https://github.com/DoctorMcKay/node-tf2.git"
 	},
 	"dependencies": {
+		"@doctormckay/stdlib": "^2.7.1",
 		"bytebuffer": "^5.0.1",
-		"protobufjs": "^6.8.8",
-		"request": "^2.88.0",
-		"steamid": "^1.1.0",
-		"vdf": "^0.0.2"
+		"kvparser": "^1.0.2",
+		"protobufjs": "^7.2.5",
+		"steamid": "^2.0.0"
 	},
 	"devDependencies": {
 		"steam-user": "^4.2.0"
@@ -32,6 +32,6 @@
 		"generate-protos": "node scripts/generate-protos.js"
 	},
 	"engines": {
-		"node": ">=8.0.0"
+		"node": ">=14.0.0"
 	}
 }

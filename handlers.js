@@ -1,7 +1,7 @@
 const ByteBuffer = require('bytebuffer');
-const Request = require('request');
+const {HttpClient} = require('@doctormckay/stdlib/http');
 const SteamID = require('steamid');
-const VDF = require('vdf');
+const VDF = require('kvparser');
 
 const TeamFortress2 = require('./index.js');
 const Language = require('./language.js');
@@ -45,23 +45,27 @@ handlers[Language.ServerGoodbye] = function(body) {
 };
 
 // Item schema
-handlers[Language.UpdateItemSchema] = function(body) {
-	let proto = decodeProto(Schema.CMsgUpdateItemSchema, body);
-	this.emit('itemSchema', proto.item_schema_version.toString(16).toUpperCase(), proto.items_game_url);
+handlers[Language.UpdateItemSchema] = async function(body) {
+	try {
+		let proto = decodeProto(Schema.CMsgUpdateItemSchema, body);
+		this.emit('itemSchema', proto.item_schema_version.toString(16).toUpperCase(), proto.items_game_url);
 
-	Request.get({
-		"uri": proto.items_game_url,
-		"gzip": true
-	}, (err, response, body) => {
-		if (err) {
-			this.emit('debug', "Unable to download items_game.txt: " + err);
-			this.emit('itemSchemaError', err);
-			return;
+		let client = new HttpClient();
+		let result = await client.request({
+			method: 'get',
+			url: proto.items_game_url
+		});
+
+		if (result.statusCode != 200) {
+			throw new Error(`HTTP error ${result.statusCode}`);
 		}
 
-		this.itemSchema = VDF.parse(body).items_game;
+		this.itemSchema = VDF.parse(result.textBody).items_game;
 		this.emit('itemSchemaLoaded');
-	});
+	} catch (err) {
+		this.emit('debug', `Unable to download items_game.txt: ${err.message}`);
+		this.emit('itemSchemaError', err);
+	}
 };
 
 // Various notifications (why do we need three distinct interfaces??)
