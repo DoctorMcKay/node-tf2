@@ -142,6 +142,8 @@ handlers[Language.SO_CacheSubscribed] = function(body) {
 		switch (cache.type_id) {
 			case 1:
 				// Backpack
+				if (!this.shouldLoadBackpack) break;
+
 				let items = cache.object_data.map((object) => {
 					let item = decodeProto(Schema.CSOEconItem, object);
 					let isNew = (item.inventory >>> 30) & 1;
@@ -179,7 +181,8 @@ handlers[Language.SO_Create] = function(body) {
 
 	let item = decodeProto(Schema.CSOEconItem, proto.object_data);
 	item.position = item.inventory & 0x0000FFFF;
-	this.backpack.push(item);
+	
+	if (this.backpack) this.backpack.push(item);
 	this.emit('itemAcquired', item);
 };
 

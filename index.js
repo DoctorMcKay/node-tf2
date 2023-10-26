@@ -25,6 +25,7 @@ function TeamFortress2(steam) {
 
 	this._steam = steam;
 	this.haveGCSession = false;
+	this.shouldLoadBackpack = true;
 	this._isInTF2 = false;
 
 	this._steam.on('receivedFromGC', (appid, msgType, payload) => {
