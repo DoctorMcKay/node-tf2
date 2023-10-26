@@ -7,6 +7,8 @@ const VDF = require('kvparser');
 const Language = require('./language.js');
 const Schema = require('./protobufs/generated/_load.js');
 
+const g_ItemSchemaCache = new Map();
+
 const STEAM_APPID = 440;
 
 module.exports = TeamFortress2;
@@ -26,6 +28,24 @@ function TeamFortress2(steam) {
 	this._steam = steam;
 	this.haveGCSession = false;
 	this._isInTF2 = false;
+
+	Object.defineProperty(this, 'itemSchema', {
+		get: function() {
+			return g_ItemSchemaCache.get('itemSchema');
+		},
+		set: function(value) {
+			g_ItemSchemaCache.set('itemSchema', value);
+		}
+	});
+
+	Object.defineProperty(this, 'itemSchemaVersion', {
+		get: function() {
+			return g_ItemSchemaCache.get('itemSchemaVersion');
+		},
+		set: function(value) {
+			g_ItemSchemaCache.set('itemSchemaVersion', value);
+		}
+	});
 
 	this._steam.on('receivedFromGC', (appid, msgType, payload) => {
 		if (appid != STEAM_APPID) {
