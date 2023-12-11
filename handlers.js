@@ -1,11 +1,14 @@
 const ByteBuffer = require('bytebuffer');
 const {HttpClient} = require('@doctormckay/stdlib/http');
+const {Semaphore} = require('@doctormckay/stdlib/concurrency.js');
 const SteamID = require('steamid');
 const VDF = require('kvparser');
 
 const TeamFortress2 = require('./index.js');
 const Language = require('./language.js');
 const Schema = require('./protobufs/generated/_load.js');
+
+const g_ItemSchemaRetrievalSemaphore = new Semaphore();
 
 const handlers = TeamFortress2.prototype._handlers;
 
@@ -46,25 +49,38 @@ handlers[Language.ServerGoodbye] = function(body) {
 
 // Item schema
 handlers[Language.UpdateItemSchema] = async function(body) {
+	let release = await g_ItemSchemaRetrievalSemaphore.waitAsync();
+
 	try {
 		let proto = decodeProto(Schema.CMsgUpdateItemSchema, body);
-		this.emit('itemSchema', proto.item_schema_version.toString(16).toUpperCase(), proto.items_game_url);
 
-		let client = new HttpClient();
-		let result = await client.request({
-			method: 'get',
-			url: proto.items_game_url
-		});
+		let schemaVersion = proto.item_schema_version.toString(16).toUpperCase();
+		let schemaUrl = proto.items_game_url;
 
-		if (result.statusCode != 200) {
-			throw new Error(`HTTP error ${result.statusCode}`);
+		this.emit('itemSchema', schemaVersion, schemaUrl);
+
+		if (schemaVersion !== this.itemSchemaVersion) {
+			let client = new HttpClient();
+
+			let result = await client.request({
+				method: 'get',
+				url: schemaUrl
+			});
+
+			if (result.statusCode != 200) {
+				throw new Error(`HTTP error ${result.statusCode}`);
+			}
+
+			this.itemSchema = VDF.parse(result.textBody).items_game;
+			this.itemSchemaVersion = schemaVersion;
 		}
 
-		this.itemSchema = VDF.parse(result.textBody).items_game;
 		this.emit('itemSchemaLoaded');
 	} catch (err) {
 		this.emit('debug', `Unable to download items_game.txt: ${err.message}`);
 		this.emit('itemSchemaError', err);
+	} finally {
+		release();
 	}
 };
 
@@ -180,8 +196,10 @@ handlers[Language.SO_Create] = function(body) {
 	}
 
 	let item = decodeProto(Schema.CSOEconItem, proto.object_data);
-	item.position = item.inventory & 0x0000FFFF;
-	
+  
+	let isNew = (item.inventory >>> 30) & 1;
+	item.position = (isNew ? 0 : item.inventory & 0xFFFF);
+
 	if (this.backpack) this.backpack.push(item);
 	this.emit('itemAcquired', item);
 };

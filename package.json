@@ -19,7 +19,7 @@
 		"url": "https://github.com/DoctorMcKay/node-tf2.git"
 	},
 	"dependencies": {
-		"@doctormckay/stdlib": "^2.7.1",
+		"@doctormckay/stdlib": "^2.9.1",
 		"bytebuffer": "^5.0.1",
 		"kvparser": "^1.0.2",
 		"protobufjs": "^7.2.5",
