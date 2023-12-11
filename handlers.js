@@ -194,7 +194,10 @@ handlers[Language.SO_Create] = function(body) {
 	}
 
 	let item = decodeProto(Schema.CSOEconItem, proto.object_data);
-	item.position = item.inventory & 0x0000FFFF;
+	
+	let isNew = (item.inventory >>> 30) & 1;
+	item.position = (isNew ? 0 : item.inventory & 0xFFFF);
+
 	this.backpack.push(item);
 	this.emit('itemAcquired', item);
 };
