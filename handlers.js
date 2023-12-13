@@ -191,10 +191,6 @@ handlers[Language.SO_Create] = function(body) {
 		return; // Not an item
 	}
 
-	if (!this.backpack) {
-		return; // We don't have our backpack yet!
-	}
-
 	let item = decodeProto(Schema.CSOEconItem, proto.object_data);
   
 	let isNew = (item.inventory >>> 30) & 1;
