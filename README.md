@@ -87,6 +87,8 @@ You can call this at any time, even when disconnected. If you get an updated loc
 
 Craft `items` together into a new item, optionally using a specific `recipe`. The `recipe` parameter is optional and you don't normally need to specify it. `items` should be an array of item IDs to craft.
 
+Recipe IDs can be found in `TeamFortress2.CraftRecipes` enum.
+
 ### trade(steamID)
 
 Sends an in-game trade request to `steamID`. The other player must be playing TF2 currently. Listen for the `tradeResponse`
