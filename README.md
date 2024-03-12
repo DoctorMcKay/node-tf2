@@ -257,7 +257,7 @@ The `premium` property of node-tf2 would now be true and the `backpackSlots` pro
 Emitted when we receive a new item. `item` is the item that we just received, and `tf2.backpack` is updated before the event is emitted.
 
 ### itemChanged
-- `oldItem` - The old item data
+- `oldItem` - The old item data (may be same as `newItem` if backpack was not loaded yet)
 - `newItem` - The new item data
 
 Emitted when an item in our backpack changes (e.g. style update, position changed, etc.).
