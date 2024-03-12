@@ -173,13 +173,12 @@ handlers[Language.SO_Create] = function(body) {
 		return; // Not an item
 	}
 
-	if (!this.backpack) {
-		return; // We don't have our backpack yet!
-	}
-
 	let item = decodeProto(Schema.CSOEconItem, proto.object_data);
-	item.position = item.inventory & 0x0000FFFF;
-	this.backpack.push(item);
+
+	let isNew = (item.inventory >>> 30) & 1;
+	item.position = (isNew ? 0 : item.inventory & 0xFFFF);
+
+	if (this.backpack) this.backpack.push(item);
 	this.emit('itemAcquired', item);
 };
 
@@ -199,22 +198,24 @@ handlers[Language.SO_UpdateMultiple] = function(body) {
 TeamFortress2.prototype._handleSOUpdate = function(so) {
 	switch (so.type_id) {
 		case 1:
-			if (!this.backpack) {
-				return; // We don't have our backpack yet!
-			}
+			let newItem = decodeProto(Schema.CSOEconItem, so.object_data);
 
-			let item = decodeProto(Schema.CSOEconItem, so.object_data);
-			item.position = item.inventory & 0x0000FFFF;
-			for (let i = 0; i < this.backpack.length; i++) {
-				if (this.backpack[i].id == item.id) {
-					let oldItem = this.backpack[i];
-					this.backpack[i] = item;
+			let isNew = (newItem.inventory >>> 30) & 1;
+			newItem.position = (isNew ? 0 : newItem.inventory & 0xFFFF);
 
-					this.emit('itemChanged', oldItem, item);
+			let oldItem = null;
+
+			if (this.backpack) {
+				for (let i = 0; i < this.backpack.length; i++) {
+					if (this.backpack[i].id != newItem.id) continue;
+					
+					oldItem = this.backpack[i];
+					this.backpack[i] = newItem;
 					break;
 				}
 			}
 
+			this.emit('itemChanged', oldItem || newItem, newItem);
 			break;
 		case 7:
 			let data = decodeProto(Schema.CSOEconGameAccountClient, so.object_data);
@@ -255,21 +256,21 @@ handlers[Language.SO_Destroy] = function(body) {
 		return; // Not an item
 	}
 
-	if (!this.backpack) {
-		return; // We don't have our backpack yet
-	}
-
 	let item = decodeProto(Schema.CSOEconItem, proto.object_data);
-	let itemData = null;
-	for (let i = 0; i < this.backpack.length; i++) {
-		if (this.backpack[i].id == item.id) {
-			itemData = this.backpack[i];
+
+	let isNew = (item.inventory >>> 30) & 1;
+	item.position = (isNew ? 0 : item.inventory & 0xFFFF);
+
+	if (this.backpack) {
+		for (let i = 0; i < this.backpack.length; i++) {
+			if (this.backpack[i].id != item.id) continue;
+
 			this.backpack.splice(i, 1);
 			break;
 		}
 	}
 
-	this.emit('itemRemoved', itemData);
+	this.emit('itemRemoved', item);
 };
 
 // Item manipulation
